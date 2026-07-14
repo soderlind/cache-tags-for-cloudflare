@@ -35,21 +35,39 @@ describe( 'App', () => {
 		api.getGroups.mockResolvedValue( groups );
 		api.purge.mockResolvedValue( { success: true, message: 'Purged.' } );
 		api.saveSettings.mockResolvedValue( settings );
+		api.verifyToken.mockResolvedValue( { success: true, message: 'ok' } );
 	} );
 
-	it( 'renders the settings and tools once loaded', async () => {
+	async function verify() {
+		fireEvent.click( await screen.findByRole( 'tab', { name: 'Settings' } ) );
+		fireEvent.click(
+			await screen.findByRole( 'button', { name: 'Test connection' } )
+		);
+		await waitFor( () => expect( api.verifyToken ).toHaveBeenCalled() );
+		fireEvent.click( await screen.findByRole( 'tab', { name: 'Purge' } ) );
+		await waitFor( () =>
+			expect(
+				screen.getByRole( 'button', { name: 'Purge everything' } )
+			).toBeEnabled()
+		);
+	}
+
+	it( 'shows the purge tab by default with purging locked', async () => {
 		render( <App /> );
 
-		expect( await screen.findByText( 'Settings' ) ).toBeInTheDocument();
-		expect( screen.getByText( 'Purge tools' ) ).toBeInTheDocument();
+		expect( await screen.findByText( 'Purge tools' ) ).toBeInTheDocument();
+		expect( screen.getByRole( 'tab', { name: 'Settings' } ) ).toBeInTheDocument();
+		expect(
+			screen.getByRole( 'button', { name: 'Purge everything' } )
+		).toBeDisabled();
 	} );
 
-	it( 'purges everything after confirmation', async () => {
+	it( 'unlocks and purges everything after verifying', async () => {
 		window.confirm = vi.fn( () => true );
 		render( <App /> );
 
-		const button = await screen.findByRole( 'button', { name: 'Purge everything' } );
-		fireEvent.click( button );
+		await verify();
+		fireEvent.click( screen.getByRole( 'button', { name: 'Purge everything' } ) );
 
 		await waitFor( () =>
 			expect( api.purge ).toHaveBeenCalledWith( { mode: 'everything' } )
@@ -60,18 +78,32 @@ describe( 'App', () => {
 		window.confirm = vi.fn( () => false );
 		render( <App /> );
 
-		const button = await screen.findByRole( 'button', { name: 'Purge everything' } );
-		fireEvent.click( button );
+		await verify();
+		fireEvent.click( screen.getByRole( 'button', { name: 'Purge everything' } ) );
 
 		expect( api.purge ).not.toHaveBeenCalled();
 	} );
 
-	it( 'saves settings', async () => {
+	it( 'saves settings and auto-verifies the connection', async () => {
 		render( <App /> );
 
-		const button = await screen.findByRole( 'button', { name: 'Save settings' } );
-		fireEvent.click( button );
+		fireEvent.click( await screen.findByRole( 'tab', { name: 'Settings' } ) );
+		fireEvent.click(
+			await screen.findByRole( 'button', { name: 'Save settings' } )
+		);
 
 		await waitFor( () => expect( api.saveSettings ).toHaveBeenCalledTimes( 1 ) );
+		await waitFor( () => expect( api.verifyToken ).toHaveBeenCalledTimes( 1 ) );
+	} );
+
+	it( 'tests the connection from the settings tab', async () => {
+		render( <App /> );
+
+		fireEvent.click( await screen.findByRole( 'tab', { name: 'Settings' } ) );
+		fireEvent.click(
+			await screen.findByRole( 'button', { name: 'Test connection' } )
+		);
+
+		await waitFor( () => expect( api.verifyToken ).toHaveBeenCalledTimes( 1 ) );
 	} );
 } );

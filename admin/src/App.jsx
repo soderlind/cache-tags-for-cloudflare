@@ -4,6 +4,7 @@
 import { useState, useEffect, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import {
+	TabPanel,
 	Card,
 	CardHeader,
 	CardBody,
@@ -30,6 +31,7 @@ export default function App() {
 	const [ settings, setSettings ] = useState( null );
 	const [ groups, setGroups ] = useState( { post_types: [], taxonomies: [] } );
 	const [ notices, setNotices ] = useState( [] );
+	const [ verified, setVerified ] = useState( false );
 
 	const addNotice = useCallback( ( status, message ) => {
 		const id = ++noticeId;
@@ -63,15 +65,14 @@ export default function App() {
 		);
 	}
 
+	const tabs = [
+		{ name: 'purge', title: __( 'Purge', 'cache-tags-for-cloudflare' ) },
+		{ name: 'settings', title: __( 'Settings', 'cache-tags-for-cloudflare' ) },
+	];
+
 	return (
 		<div className="ctcf-app">
 			<h1>{ __( 'Cache Tags for Cloudflare', 'cache-tags-for-cloudflare' ) }</h1>
-			<p>
-				{ __(
-					'Cache-Tag headers and purge-by-tag work on all Cloudflare plans; purge API rate limits scale with your plan.',
-					'cache-tags-for-cloudflare'
-				) }
-			</p>
 
 			{ notices.map( ( notice ) => (
 				<Notice
@@ -83,24 +84,58 @@ export default function App() {
 				</Notice>
 			) ) }
 
-			<SettingsCard
-				settings={ settings }
-				onSaved={ setSettings }
-				addNotice={ addNotice }
-			/>
+			<TabPanel className="ctcf-tabs" tabs={ tabs }>
+				{ ( tab ) => {
+					if ( 'settings' === tab.name ) {
+						return (
+							<SettingsPanel
+								settings={ settings }
+								onSaved={ setSettings }
+								setVerified={ setVerified }
+								addNotice={ addNotice }
+							/>
+						);
+					}
 
-			<ToolsCard groups={ groups } addNotice={ addNotice } />
+					return (
+						<PurgePanel
+							groups={ groups }
+							verified={ verified }
+							addNotice={ addNotice }
+						/>
+					);
+				} }
+			</TabPanel>
 		</div>
 	);
 }
 
-function SettingsCard( { settings, onSaved, addNotice } ) {
+function SettingsPanel( { settings, onSaved, setVerified, addNotice } ) {
 	const [ headerEnabled, setHeaderEnabled ] = useState( settings.header_enabled );
 	const [ purgeEnabled, setPurgeEnabled ] = useState( settings.purge_enabled );
 	const [ debug, setDebug ] = useState( settings.debug );
 	const [ token, setToken ] = useState( '' );
 	const [ zone, setZone ] = useState( settings.zone_id );
 	const [ saving, setSaving ] = useState( false );
+	const [ testing, setTesting ] = useState( false );
+
+	const runVerify = () => {
+		setTesting( true );
+
+		return verifyToken()
+			.then( ( result ) => {
+				setVerified( result.success );
+				addNotice( result.success ? 'success' : 'error', result.message );
+			} )
+			.catch( () => {
+				setVerified( false );
+				addNotice(
+					'error',
+					__( 'Connection test failed.', 'cache-tags-for-cloudflare' )
+				);
+			} )
+			.finally( () => setTesting( false ) );
+	};
 
 	const save = () => {
 		setSaving( true );
@@ -119,6 +154,8 @@ function SettingsCard( { settings, onSaved, addNotice } ) {
 					'success',
 					__( 'Settings saved.', 'cache-tags-for-cloudflare' )
 				);
+				// Automatically verify the saved credentials.
+				return runVerify();
 			} )
 			.catch( () =>
 				addNotice(
@@ -127,6 +164,10 @@ function SettingsCard( { settings, onSaved, addNotice } ) {
 				)
 			)
 			.finally( () => setSaving( false ) );
+	};
+
+	const test = () => {
+		runVerify();
 	};
 
 	return (
@@ -214,21 +255,28 @@ function SettingsCard( { settings, onSaved, addNotice } ) {
 
 				<br />
 
-				<Button variant="primary" onClick={ save } isBusy={ saving } disabled={ saving }>
-					{ __( 'Save settings', 'cache-tags-for-cloudflare' ) }
-				</Button>
+				<div className="ctcf-actions">
+					<Button variant="primary" onClick={ save } isBusy={ saving } disabled={ saving || testing }>
+						{ __( 'Save settings', 'cache-tags-for-cloudflare' ) }
+					</Button>
+					<Button variant="secondary" onClick={ test } isBusy={ testing } disabled={ saving || testing }>
+						{ __( 'Test connection', 'cache-tags-for-cloudflare' ) }
+					</Button>
+				</div>
 			</CardBody>
 		</Card>
 	);
 }
 
-function ToolsCard( { groups, addNotice } ) {
+function PurgePanel( { groups, verified, addNotice } ) {
 	const [ busy, setBusy ] = useState( '' );
 	const [ postType, setPostType ] = useState( '' );
 	const [ taxonomy, setTaxonomy ] = useState( '' );
 	const [ terms, setTerms ] = useState( [] );
 	const [ termSlug, setTermSlug ] = useState( '' );
 	const [ rawTags, setRawTags ] = useState( '' );
+
+	const locked = ! verified;
 
 	const run = ( action, data ) => {
 		setBusy( action );
@@ -258,22 +306,6 @@ function ToolsCard( { groups, addNotice } ) {
 				.then( ( fetched ) => setTerms( fetched ) )
 				.catch( () => setTerms( [] ) );
 		}
-	};
-
-	const testConnection = () => {
-		setBusy( 'verify' );
-
-		verifyToken()
-			.then( ( result ) =>
-				addNotice( result.success ? 'success' : 'error', result.message )
-			)
-			.catch( () =>
-				addNotice(
-					'error',
-					__( 'Connection test failed.', 'cache-tags-for-cloudflare' )
-				)
-			)
-			.finally( () => setBusy( '' ) );
 	};
 
 	const purgeEverything = () => {
@@ -311,21 +343,22 @@ function ToolsCard( { groups, addNotice } ) {
 				<h2>{ __( 'Purge tools', 'cache-tags-for-cloudflare' ) }</h2>
 			</CardHeader>
 			<CardBody>
+				{ locked && (
+					<Notice status="warning" isDismissible={ false }>
+						{ __(
+							'Add and save valid Cloudflare credentials on the Settings tab to unlock purging.',
+							'cache-tags-for-cloudflare'
+						) }
+					</Notice>
+				) }
+
 				<div className="ctcf-actions" style={ { marginBottom: '20px' } }>
-					<Button
-						variant="secondary"
-						onClick={ testConnection }
-						isBusy={ 'verify' === busy }
-						disabled={ '' !== busy }
-					>
-						{ __( 'Test connection', 'cache-tags-for-cloudflare' ) }
-					</Button>
 					<Button
 						isDestructive
 						variant="secondary"
 						onClick={ purgeEverything }
 						isBusy={ 'everything' === busy }
-						disabled={ '' !== busy }
+						disabled={ '' !== busy || locked }
 					>
 						{ __( 'Purge everything', 'cache-tags-for-cloudflare' ) }
 					</Button>
@@ -341,7 +374,7 @@ function ToolsCard( { groups, addNotice } ) {
 					/>
 					<Button
 						variant="secondary"
-						disabled={ '' === postType || '' !== busy }
+						disabled={ '' === postType || '' !== busy || locked }
 						isBusy={ 'post_type' === busy }
 						onClick={ () => run( 'post_type', { mode: 'post_type', post_type: postType } ) }
 					>
@@ -376,7 +409,7 @@ function ToolsCard( { groups, addNotice } ) {
 					) }
 					<Button
 						variant="secondary"
-						disabled={ '' === taxonomy || '' === termSlug || '' !== busy }
+						disabled={ '' === taxonomy || '' === termSlug || '' !== busy || locked }
 						isBusy={ 'taxonomy' === busy }
 						onClick={ () =>
 							run( 'taxonomy', {
@@ -403,7 +436,7 @@ function ToolsCard( { groups, addNotice } ) {
 					/>
 					<Button
 						variant="secondary"
-						disabled={ '' === rawTags.trim() || '' !== busy }
+						disabled={ '' === rawTags.trim() || '' !== busy || locked }
 						isBusy={ 'tags' === busy }
 						onClick={ () => run( 'tags', { mode: 'tags', tags: rawTags } ) }
 					>

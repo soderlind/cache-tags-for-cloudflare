@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-07-15
+
+### Added
+
+- Rebuilt the settings screen as a React app with **Purge** and **Settings** tabs.
+- Purge-by-group from the admin UI and REST API: a whole post type (`post-type-{type}`), a taxonomy term (`{taxonomy}-{slug}`), everything (`content`), or raw comma-separated tags.
+- REST API namespace `cache-tags-for-cloudflare/v1` (`settings`, `groups`, `verify`, `purge`) backing the admin app.
+- Vitest JavaScript test suite for the admin app.
+- Composer installability via `composer require` (`composer/installers`); the compiled `build/` assets are committed so no build step is required.
+
+### Changed
+
+- Purging is locked until valid Cloudflare credentials are saved and verified; saving settings now automatically verifies the connection.
+- Corrected documentation: the `Cache-Tag` header and purge-by-tag work on all Cloudflare plans (not Enterprise-only); purge API rate limits scale by plan.
+
 ## [1.0.0] - 2026-07-14
 
 ### Added
@@ -24,5 +39,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Dismissible admin notice surfacing recurring purge failures.
 - WP-CLI commands: `wp cache-tags purge --tags=<tags>|--all` and `wp cache-tags verify`.
 
-[Unreleased]: https://github.com/soderlind/cache-tags-for-cloudflare/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/soderlind/cache-tags-for-cloudflare/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/soderlind/cache-tags-for-cloudflare/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/soderlind/cache-tags-for-cloudflare/releases/tag/v1.0.0
