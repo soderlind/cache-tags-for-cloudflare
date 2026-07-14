@@ -1,0 +1,5 @@
+# readme.txt is the WordPress plugin readme format, not Markdown.
+readme.txt
+node_modules
+vendor
+build

@@ -3,6 +3,19 @@
 	"description": "Adds Cache-Tag HTTP response headers for singular WordPress content and purges Cloudflare by tag when content changes.",
 	"type": "wordpress-plugin",
 	"license": "GPL-2.0-or-later",
+	"keywords": [
+		"wordpress",
+		"cloudflare",
+		"cache",
+		"cache-tag",
+		"purge",
+		"cdn"
+	],
+	"homepage": "https://github.com/soderlind/cache-tags-for-cloudflare",
+	"support": {
+		"issues": "https://github.com/soderlind/cache-tags-for-cloudflare/issues",
+		"source": "https://github.com/soderlind/cache-tags-for-cloudflare"
+	},
 	"authors": [
 		{
 			"name": "Per Søderlind",
@@ -10,7 +23,8 @@
 		}
 	],
 	"require": {
-		"php": ">=8.3"
+		"php": ">=8.3",
+		"composer/installers": "^1.12 || ^2.0"
 	},
 	"require-dev": {
 		"brain/monkey": "^2.6",
@@ -34,6 +48,7 @@
 	},
 	"config": {
 		"allow-plugins": {
+			"composer/installers": true,
 			"dealerdirect/phpcodesniffer-composer-installer": true
 		},
 		"sort-packages": true

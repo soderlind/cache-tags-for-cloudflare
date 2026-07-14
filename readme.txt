@@ -4,7 +4,7 @@ Tags: cloudflare, cache, cache-tag, purge, cdn
 Requires at least: 6.8
 Tested up to: 7.0
 Requires PHP: 8.3
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -19,7 +19,7 @@ Cache Tags for Cloudflare does two things:
 
 The two features can be enabled independently.
 
-**Requires a Cloudflare Enterprise plan.** The `Cache-Tag` header and purge-by-tag are Enterprise-only Cloudflare features.
+**Works on any Cloudflare plan.** The `Cache-Tag` header and purge-by-tag are available on all Cloudflare plans (Free, Pro, Business, and Enterprise); purge API rate limits scale with your plan.
 
 = Default tags =
 
@@ -43,6 +43,10 @@ Provide a scoped Cloudflare API token (Zone → Cache Purge permission) and a Zo
 `define( 'CACHE_TAGS_CF_ZONE_ID', 'your-zone-id' );`
 
 When these constants are defined they take precedence and the settings fields become read-only. Otherwise enter them under **Settings → Cache Tags**.
+
+= Purge tools =
+
+The **Settings → Cache Tags** screen has a **Purge** tab for manual, on-demand purges by group: a whole post type, a taxonomy term, everything, or raw comma-separated tags. Saving valid credentials on the **Settings** tab automatically verifies the Cloudflare connection and unlocks the purge tools.
 
 = Extending the tags =
 
@@ -80,13 +84,22 @@ React to purges:
 
 = Do I need a Cloudflare Enterprise plan? =
 
-Yes. The `Cache-Tag` header and purge-by-tag are Enterprise-only Cloudflare features.
+No. The `Cache-Tag` header and purge-by-tag are available on all Cloudflare plans (Free, Pro, Business, and Enterprise). Only the purge API rate limits differ by plan.
 
 = Why don't I see the Cache-Tag header on my live site? =
 
 When traffic is proxied through Cloudflare, Cloudflare consumes the `Cache-Tag` header and strips it before the response reaches visitors. Check it at the origin: `curl -I https://example.com/sample-post/`.
 
 == Changelog ==
+
+= 1.1.0 =
+* Rebuilt the settings screen as a React app with Purge and Settings tabs.
+* Added purge-by-group: whole post type, taxonomy term, everything, and raw tags.
+* Added a REST API (cache-tags-for-cloudflare/v1) backing the admin UI.
+* Purging is locked until valid credentials are saved and verified; saving auto-verifies the connection.
+* Added a Vitest JavaScript test suite.
+* Made the plugin installable via Composer (composer require).
+* Corrected docs: works on all Cloudflare plans (not Enterprise-only).
 
 = 1.0.0 =
 * Initial release: Cache-Tag headers for singular content plus Cloudflare purge-by-tag on content changes.

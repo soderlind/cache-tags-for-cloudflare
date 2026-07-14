@@ -14,8 +14,10 @@ use Soderlind\CacheTagsForCloudflare\Admin\SettingsPage;
 use Soderlind\CacheTagsForCloudflare\CLI\Command;
 use Soderlind\CacheTagsForCloudflare\Purging\CloudflareClient;
 use Soderlind\CacheTagsForCloudflare\Purging\Credentials;
+use Soderlind\CacheTagsForCloudflare\Purging\GroupPurgeResolver;
 use Soderlind\CacheTagsForCloudflare\Purging\PurgeCollector;
 use Soderlind\CacheTagsForCloudflare\Purging\PurgeTriggers;
+use Soderlind\CacheTagsForCloudflare\Rest\SettingsController;
 use Soderlind\CacheTagsForCloudflare\Support\Logger;
 use Soderlind\CacheTagsForCloudflare\Support\Options;
 use Soderlind\CacheTagsForCloudflare\Tagging\HeaderEmitter;
@@ -42,7 +44,8 @@ final class Plugin {
 
 		$this->bootTagging( $options );
 		$this->bootPurging( $options, $logger, $client );
-		$this->bootAdmin( $options, $credentials, $client );
+		$this->bootRest( $options, $credentials, $client );
+		$this->bootAdmin();
 		$this->bootCli( $client );
 	}
 
@@ -70,14 +73,27 @@ final class Plugin {
 	}
 
 	/**
+	 * Register the REST routes backing the admin app.
+	 */
+	private function bootRest( Options $options, Credentials $credentials, CloudflareClient $client ): void {
+		( new SettingsController(
+			$options,
+			$credentials,
+			$client,
+			new GroupPurgeResolver(),
+			new TagNormalizer()
+		) )->register();
+	}
+
+	/**
 	 * Wire the admin UI.
 	 */
-	private function bootAdmin( Options $options, Credentials $credentials, CloudflareClient $client ): void {
+	private function bootAdmin(): void {
 		if ( ! is_admin() ) {
 			return;
 		}
 
-		( new SettingsPage( $options, $credentials, $client ) )->register();
+		( new SettingsPage() )->register();
 		( new Notices() )->register();
 	}
 

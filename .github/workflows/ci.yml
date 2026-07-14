@@ -32,3 +32,31 @@ jobs:
 
       - name: PHPUnit
         run: composer test
+
+  assets:
+    name: Build & lint JS
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint JS
+        # Non-blocking: @wordpress/scripts' ESLint config can break on newer
+        # Node/TypeScript combos. The build below is the hard gate.
+        continue-on-error: true
+        run: npm run lint:js
+
+      - name: Test JS
+        run: npm run test:js
+
+      - name: Build
+        run: npm run build

@@ -40,7 +40,7 @@ msgstr ""
 msgid "Cache Tags"
 msgstr ""
 
-msgid "Cloudflare Cache-Tag headers and purge-by-tag require a Cloudflare Enterprise plan."
+msgid "Cache-Tag headers and purge-by-tag work on all Cloudflare plans; purge API rate limits scale with your plan."
 msgstr ""
 
 msgid "Emit Cache-Tag headers"
