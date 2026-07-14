@@ -19,16 +19,26 @@ jobs:
           php-version: '8.3'
           tools: composer
 
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
       - name: Install production dependencies
         run: composer install --no-dev --prefer-dist --no-progress --optimize-autoloader
+
+      - name: Build admin assets
+        run: |
+          npm ci
+          npm run build
 
       - name: Build plugin zip
         run: |
           PLUGIN_SLUG=cache-tags-for-cloudflare
-          mkdir -p build/${PLUGIN_SLUG}
-          rsync -a --exclude-from=.distignore ./ build/${PLUGIN_SLUG} \
-            --exclude build --exclude .git
-          cd build
+          mkdir -p dist/${PLUGIN_SLUG}
+          rsync -a --exclude-from=.distignore ./ dist/${PLUGIN_SLUG} \
+            --exclude dist --exclude .git
+          cd dist
           zip -r ../${PLUGIN_SLUG}.zip ${PLUGIN_SLUG}
 
       - name: Attach zip to GitHub release

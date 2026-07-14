@@ -3,7 +3,7 @@
 Adds `Cache-Tag` HTTP response headers for singular WordPress content and purges Cloudflare by tag when content changes.
 
 - **Requires:** WordPress 6.8+, PHP 8.3+
-- **Requires a Cloudflare Enterprise plan** — `Cache-Tag` headers and purge-by-tag are Enterprise-only Cloudflare features.
+- **Works on any Cloudflare plan** — the `Cache-Tag` header and purge-by-tag are available on all plans (Free, Pro, Business, Enterprise); purge API rate limits scale with your plan.
 
 ## What it does
 

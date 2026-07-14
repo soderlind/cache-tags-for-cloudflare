@@ -5,7 +5,7 @@
 # Build / cache
 /.phpunit.cache/
 .phpunit.result.cache
-/build/
+/dist/
 *.log
 
 # Editor / OS

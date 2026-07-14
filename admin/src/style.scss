@@ -1,0 +1,26 @@
+.ctcf-app {
+	max-width: 720px;
+
+	.components-card {
+		margin-bottom: 16px;
+	}
+
+	.ctcf-row {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: flex-end;
+		gap: 12px;
+		margin-bottom: 16px;
+
+		.components-base-control {
+			flex: 1 1 220px;
+			margin-bottom: 0;
+		}
+	}
+
+	.ctcf-actions {
+		display: flex;
+		gap: 8px;
+		flex-wrap: wrap;
+	}
+}

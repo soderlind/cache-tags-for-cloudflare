@@ -15,6 +15,7 @@ cache tags, and one that **invalidates** cached responses by tag.
   `{taxonomy}-{slug}`, `content`, …). If a tag is not emitted on the response, purging it
   has no effect.
 - **Shared constraint (Cloudflare)**: The `Cache-Tag` header and purge-by-tag are
-  **Cloudflare Enterprise-plan-only** features. Both contexts are inert on non-Enterprise zones.
+  available on **all Cloudflare plans**; only the purge API rate limits scale by plan.
+  Both contexts require the zone's traffic to be proxied through Cloudflare.
 - **Independence**: The two contexts are toggled independently (a site may emit headers
   without granting purge credentials, or vice-versa).

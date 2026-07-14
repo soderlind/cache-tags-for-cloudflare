@@ -1,0 +1,27 @@
+{
+	"name": "cache-tags-for-cloudflare",
+	"private": true,
+	"version": "1.0.0",
+	"description": "Admin UI for Cache Tags for Cloudflare.",
+	"license": "GPL-2.0-or-later",
+	"scripts": {
+		"build": "wp-scripts build index=admin/src/index.jsx",
+		"start": "wp-scripts start index=admin/src/index.jsx",
+		"lint:js": "wp-scripts lint-js admin/src",
+		"test:js": "vitest run",
+		"test:js:watch": "vitest"
+	},
+	"devDependencies": {
+		"@testing-library/dom": "^10.4.1",
+		"@testing-library/jest-dom": "^6.9.1",
+		"@testing-library/react": "^16.3.2",
+		"@vitejs/plugin-react": "^5.2.0",
+		"@wordpress/api-fetch": "^7.51.0",
+		"@wordpress/components": "^37.0.0",
+		"@wordpress/element": "^8.3.0",
+		"@wordpress/i18n": "^6.24.0",
+		"@wordpress/scripts": "^33.0.0",
+		"jsdom": "^29.1.1",
+		"vitest": "^4.1.10"
+	}
+}

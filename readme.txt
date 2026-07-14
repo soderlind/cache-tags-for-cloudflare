@@ -19,7 +19,7 @@ Cache Tags for Cloudflare does two things:
 
 The two features can be enabled independently.
 
-**Requires a Cloudflare Enterprise plan.** The `Cache-Tag` header and purge-by-tag are Enterprise-only Cloudflare features.
+**Works on any Cloudflare plan.** The `Cache-Tag` header and purge-by-tag are available on all Cloudflare plans (Free, Pro, Business, and Enterprise); purge API rate limits scale with your plan.
 
 = Default tags =
 
@@ -80,7 +80,7 @@ React to purges:
 
 = Do I need a Cloudflare Enterprise plan? =
 
-Yes. The `Cache-Tag` header and purge-by-tag are Enterprise-only Cloudflare features.
+No. The `Cache-Tag` header and purge-by-tag are available on all Cloudflare plans (Free, Pro, Business, and Enterprise). Only the purge API rate limits differ by plan.
 
 = Why don't I see the Cache-Tag header on my live site? =
 
