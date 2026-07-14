@@ -1,0 +1,48 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    name: Build & release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          tools: composer
+
+      - name: Install production dependencies
+        run: composer install --no-dev --prefer-dist --no-progress --optimize-autoloader
+
+      - name: Build plugin zip
+        run: |
+          PLUGIN_SLUG=cache-tags-for-cloudflare
+          mkdir -p build/${PLUGIN_SLUG}
+          rsync -a --exclude-from=.distignore ./ build/${PLUGIN_SLUG} \
+            --exclude build --exclude .git
+          cd build
+          zip -r ../${PLUGIN_SLUG}.zip ${PLUGIN_SLUG}
+
+      - name: Attach zip to GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: cache-tags-for-cloudflare.zip
+
+      # Optional: deploy to the WordPress.org plugin repository.
+      # Enable by setting the `DEPLOY_TO_WPORG` repository variable to `true`
+      # and adding SVN_USERNAME / SVN_PASSWORD repository secrets.
+      - name: Deploy to WordPress.org
+        if: ${{ vars.DEPLOY_TO_WPORG == 'true' }}
+        uses: 10up/action-wordpress-plugin-deploy@stable
+        env:
+          SLUG: cache-tags-for-cloudflare
+          SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+          SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}

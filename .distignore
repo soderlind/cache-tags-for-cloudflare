@@ -1,0 +1,19 @@
+# Files and folders excluded from the distributed plugin zip / wp.org SVN.
+/.git
+/.github
+/.gitignore
+/.distignore
+/.phpunit.cache
+/.phpunit.result.cache
+/tests
+/docs
+/node_modules
+/composer.json
+/composer.lock
+/phpcs.xml.dist
+/phpstan.neon.dist
+/phpunit.xml.dist
+/CONTEXT-MAP.md
+/README.md
+/src/Tagging/CONTEXT.md
+/src/Purging/CONTEXT.md

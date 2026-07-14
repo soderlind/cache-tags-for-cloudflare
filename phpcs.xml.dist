@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<ruleset name="Cache Tags for Cloudflare">
+	<description>Coding standards for Cache Tags for Cloudflare.</description>
+
+	<file>cache-tags-for-cloudflare.php</file>
+	<file>src</file>
+
+	<exclude-pattern>*/vendor/*</exclude-pattern>
+	<exclude-pattern>*/tests/*</exclude-pattern>
+
+	<arg name="extensions" value="php"/>
+	<arg name="colors"/>
+	<arg value="sp"/>
+
+	<config name="minimum_wp_version" value="6.8"/>
+	<config name="testVersion" value="8.3-"/>
+
+	<rule ref="WordPress-Extra">
+		<!-- This plugin uses a modern, namespaced PSR-4 codebase. The sniffs
+		     below are stylistic and conflict with that choice; the substantive
+		     WordPress sniffs (security, escaping, i18n) remain enabled. -->
+		<exclude name="WordPress.Files.FileName"/>
+		<exclude name="Universal.Arrays.DisallowShortArraySyntax"/>
+		<exclude name="Generic.Arrays.DisallowShortArraySyntax"/>
+		<exclude name="WordPress.NamingConventions.ValidFunctionName"/>
+		<exclude name="WordPress.NamingConventions.ValidHookName"/>
+	</rule>
+
+	<rule ref="PHPCompatibilityWP"/>
+
+	<rule ref="WordPress.WP.I18n">
+		<properties>
+			<property name="text_domain" type="array">
+				<element value="cache-tags-for-cloudflare"/>
+			</property>
+		</properties>
+	</rule>
+</ruleset>

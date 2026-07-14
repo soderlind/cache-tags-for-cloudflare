@@ -1,0 +1,14 @@
+# Dependencies
+/vendor/
+/node_modules/
+
+# Build / cache
+/.phpunit.cache/
+.phpunit.result.cache
+/build/
+*.log
+
+# Editor / OS
+.DS_Store
+.idea/
+.vscode/

@@ -1,0 +1,52 @@
+{
+	"name": "soderlind/cache-tags-for-cloudflare",
+	"description": "Adds Cache-Tag HTTP response headers for singular WordPress content and purges Cloudflare by tag when content changes.",
+	"type": "wordpress-plugin",
+	"license": "GPL-2.0-or-later",
+	"authors": [
+		{
+			"name": "Per Søderlind",
+			"homepage": "https://soderlind.no"
+		}
+	],
+	"require": {
+		"php": ">=8.3"
+	},
+	"require-dev": {
+		"brain/monkey": "^2.6",
+		"dealerdirect/phpcodesniffer-composer-installer": "^1.0",
+		"php-stubs/wp-cli-stubs": "^2.10",
+		"phpcompatibility/phpcompatibility-wp": "^2.1",
+		"phpstan/phpstan": "^1.12",
+		"phpunit/phpunit": "^10.5 || ^11.0",
+		"szepeviktor/phpstan-wordpress": "^1.3",
+		"wp-coding-standards/wpcs": "^3.1"
+	},
+	"autoload": {
+		"psr-4": {
+			"Soderlind\\CacheTagsForCloudflare\\": "src/"
+		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"Soderlind\\CacheTagsForCloudflare\\Tests\\": "tests/"
+		}
+	},
+	"config": {
+		"allow-plugins": {
+			"dealerdirect/phpcodesniffer-composer-installer": true
+		},
+		"sort-packages": true
+	},
+	"scripts": {
+		"lint": "phpcs",
+		"lint:fix": "phpcbf",
+		"analyse": "phpstan analyse --memory-limit=1G",
+		"test": "phpunit",
+		"check": [
+			"@lint",
+			"@analyse",
+			"@test"
+		]
+	}
+}
