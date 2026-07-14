@@ -1,0 +1,72 @@
+name: Create release
+
+# Manually create a tag + GitHub release (with the built plugin zip) from a
+# chosen branch. Build is self-contained so it does not depend on the Release
+# workflow being re-triggered by the generated tag.
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: Branch to release from
+        required: true
+        default: main
+      tag:
+        description: "Release / tag name (e.g. 1.1.0 or v1.1.0)"
+        required: true
+      prerelease:
+        description: Mark as pre-release
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  create-release:
+    name: Create release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.inputs.branch }}
+          fetch-depth: 0
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          tools: composer
+
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: '20'
+
+      - name: Install production dependencies
+        run: composer install --no-dev --prefer-dist --no-progress --optimize-autoloader
+
+      - name: Build admin assets
+        run: |
+          npm ci
+          npm run build
+
+      - name: Build plugin zip
+        run: |
+          PLUGIN_SLUG=cache-tags-for-cloudflare
+          mkdir -p dist/${PLUGIN_SLUG}
+          rsync -a --exclude-from=.distignore ./ dist/${PLUGIN_SLUG} \
+            --exclude dist --exclude .git
+          cd dist
+          zip -r ../${PLUGIN_SLUG}.zip ${PLUGIN_SLUG}
+
+      - name: Create tag and release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "${{ github.event.inputs.tag }}" cache-tags-for-cloudflare.zip \
+            --target "${{ github.event.inputs.branch }}" \
+            --title "${{ github.event.inputs.tag }}" \
+            --generate-notes \
+            ${{ github.event.inputs.prerelease == 'true' && '--prerelease' || '' }}
