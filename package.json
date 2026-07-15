@@ -1,7 +1,7 @@
 {
 	"name": "cache-tags-for-cloudflare",
 	"private": true,
-	"version": "1.1.0",
+	"version": "1.1.1",
 	"description": "Admin UI for Cache Tags for Cloudflare.",
 	"license": "GPL-2.0-or-later",
 	"scripts": {

@@ -427,10 +427,6 @@ function PurgePanel( { groups, verified, addNotice } ) {
 					<TextControl
 						__nextHasNoMarginBottom
 						label={ __( 'Purge raw tags', 'cache-tags-for-cloudflare' ) }
-						help={ __(
-							'Comma-separated, e.g. post-id-42, category-news',
-							'cache-tags-for-cloudflare'
-						) }
 						value={ rawTags }
 						onChange={ setRawTags }
 					/>
@@ -443,6 +439,12 @@ function PurgePanel( { groups, verified, addNotice } ) {
 						{ __( 'Purge', 'cache-tags-for-cloudflare' ) }
 					</Button>
 				</div>
+				<p className="ctcf-help">
+					{ __(
+						'Comma-separated, e.g. post-id-42, category-news',
+						'cache-tags-for-cloudflare'
+					) }
+				</p>
 			</CardBody>
 		</Card>
 	);

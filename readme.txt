@@ -4,7 +4,7 @@ Tags: cloudflare, cache, cache-tag, purge, cdn
 Requires at least: 6.8
 Tested up to: 7.0
 Requires PHP: 8.3
-Stable tag: 1.1.0
+Stable tag: 1.1.1
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -91,6 +91,9 @@ No. The `Cache-Tag` header and purge-by-tag are available on all Cloudflare plan
 When traffic is proxied through Cloudflare, Cloudflare consumes the `Cache-Tag` header and strips it before the response reaches visitors. Check it at the origin: `curl -I https://example.com/sample-post/`.
 
 == Changelog ==
+
+= 1.1.1 =
+* Fixed alignment of the Purge buttons on the settings page.
 
 = 1.1.0 =
 * Rebuilt the settings screen as a React app with Purge and Settings tabs.

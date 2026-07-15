@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.1] - 2026-07-15
+
+### Fixed
+
+- Alignment of the Purge buttons on the settings page.
+
 ## [1.1.0] - 2026-07-15
 
 ### Added
@@ -39,6 +45,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Dismissible admin notice surfacing recurring purge failures.
 - WP-CLI commands: `wp cache-tags purge --tags=<tags>|--all` and `wp cache-tags verify`.
 
-[Unreleased]: https://github.com/soderlind/cache-tags-for-cloudflare/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/soderlind/cache-tags-for-cloudflare/compare/v1.1.1...HEAD
+[1.1.1]: https://github.com/soderlind/cache-tags-for-cloudflare/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/soderlind/cache-tags-for-cloudflare/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/soderlind/cache-tags-for-cloudflare/releases/tag/v1.0.0
