@@ -5,6 +5,8 @@ Precise Cloudflare cache purging for WordPress: adds `Cache-Tag` headers and pur
 - **Requires:** WordPress 6.8+, PHP 8.3+
 - **Works on any Cloudflare plan** — the `Cache-Tag` header and purge-by-tag are available on all plans (Free, Pro, Business, Enterprise); purge API rate limits scale with your plan.
 
+[What it does](#what-it-does) · [Default tags](#default-tags) · [Installation](#installation) · [Configuration](#configuration) · [Admin UI](#admin-ui) · [Automatic purging](#automatic-purging) · [Extensibility](#extensibility) · [WP-CLI](#wp-cli)
+
 ## What it does
 
 The plugin has two independently toggleable parts:
