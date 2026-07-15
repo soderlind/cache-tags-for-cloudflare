@@ -8,7 +8,7 @@ Stable tag: 1.1.1
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Adds Cache-Tag HTTP response headers for singular WordPress content and purges Cloudflare by tag when content changes.
+Precise Cloudflare cache purging for WordPress: adds Cache-Tag headers and purges only affected posts, pages, and terms.
 
 == Description ==
 
@@ -47,6 +47,16 @@ When these constants are defined they take precedence and the settings fields be
 = Purge tools =
 
 The **Settings → Cache Tags** screen has a **Purge** tab for manual, on-demand purges by group: a whole post type, a taxonomy term, everything, or raw comma-separated tags. Saving valid credentials on the **Settings** tab automatically verifies the Cloudflare connection and unlocks the purge tools.
+
+= Automatic purging =
+
+When **Auto-purge on changes** is enabled and valid credentials are set, the plugin purges the affected tags automatically on these events:
+
+* Post published, updated, trashed, or untrashed (any transition to or from the published status) — purges `post-id-{ID}` plus the post's `{taxonomy}-{slug}` tags.
+* Post permanently deleted — purges `post-id-{ID}` and its `{taxonomy}-{slug}` tags.
+* Taxonomy term edited or deleted — purges `{taxonomy}-{slug}`.
+
+Only public post types and taxonomies are considered; revisions and autosaves are ignored. Tags collected during a request are de-duplicated and sent as a single batched purge after the response (in Cloudflare's 30-tags-per-request batches). Draft-only edits, comments, menu/widget/theme changes, and plugin/core updates do not trigger a purge — use the Purge tab, WP-CLI, or the `cache_tags_for_cloudflare/purge_tags` filter for those. Static files such as images are served outside WordPress and are not tagged or purged by tag.
 
 = Extending the tags =
 

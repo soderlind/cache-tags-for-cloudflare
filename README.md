@@ -2,7 +2,6 @@
 
 Precise Cloudflare cache purging for WordPress: adds `Cache-Tag` headers and purges only affected posts, pages, and terms.
 
-
 - **Requires:** WordPress 6.8+, PHP 8.3+
 - **Works on any Cloudflare plan** — the `Cache-Tag` header and purge-by-tag are available on all plans (Free, Pro, Business, Enterprise); purge API rate limits scale with your plan.
 
@@ -74,6 +73,23 @@ Otherwise configure them under **Settings → Cache Tags** (see [Admin UI](#admi
 
 - **Purge** — manual, on-demand purges by group: a whole post type (`post-type-{type}`), a taxonomy term (`{taxonomy}-{slug}`), everything (`content`), or raw comma-separated tags. The purge tools stay locked until valid credentials have been saved and verified.
 - **Settings** — toggles for header emission, auto-purge, and debug logging, plus the API token and Zone ID (read-only when defined via constants). **Save settings** persists the values and automatically verifies the connection; a **Test connection** button is also available.
+
+## Automatic purging
+
+When **Auto-purge on changes** is enabled (and valid credentials are set), the plugin purges the affected tags automatically on these events:
+
+| Event | Purges |
+| --- | --- |
+| Post published, updated, trashed, or untrashed (any transition **to or from** the published status) | `post-id-{ID}` + the post's `{taxonomy}-{slug}` tags |
+| Post permanently deleted | `post-id-{ID}` + its `{taxonomy}-{slug}` tags |
+| Taxonomy term edited or deleted | `{taxonomy}-{slug}` |
+
+Details:
+
+- Only **public** post types and taxonomies are considered; **revisions and autosaves are ignored**.
+- Tags from all triggers in a request are **de-duplicated** and sent as a **single batched purge on `shutdown`** (split into Cloudflare's 30-tags-per-request batches), off the editor's critical path.
+- **Not** triggered by: draft-only edits, comments, menu/widget/theme changes, or plugin/core updates. Use the **Purge** tab, WP-CLI, or the `cache_tags_for_cloudflare/purge_tags` filter for those.
+- Static files (e.g. images under `wp-content/uploads/`) are served outside WordPress, so they are **not** tagged or purged by tag.
 
 ## Extensibility
 
