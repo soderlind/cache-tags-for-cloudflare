@@ -11,6 +11,7 @@
 /tests
 /docs
 /node_modules
+/vendor
 /admin
 /package.json
 /package-lock.json
