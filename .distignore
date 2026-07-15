@@ -1,8 +1,11 @@
 # Files and folders excluded from the distributed plugin zip / wp.org SVN.
 /.git
+/.gitattributes
 /.github
 /.gitignore
 /.distignore
+/.markdownlint.json
+/.markdownlintignore
 /.phpunit.cache
 /.phpunit.result.cache
 /tests
@@ -11,12 +14,12 @@
 /admin
 /package.json
 /package-lock.json
-/.markdownlint.json
 /composer.json
 /composer.lock
 /phpcs.xml.dist
 /phpstan.neon.dist
 /phpunit.xml.dist
+/vitest.config.js
 /CONTEXT-MAP.md
 /README.md
 /src/Tagging/CONTEXT.md
