@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
+  <title id="title">Cache Tags for Cloudflare icon</title>
+  <desc id="desc">A cache tag label targeted for precise purge.</desc>
+  <defs>
+    <linearGradient id="orange" x1="54" y1="42" x2="213" y2="216" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFB25B"/>
+      <stop offset="1" stop-color="#F38020"/>
+    </linearGradient>
+    <filter id="shadow" x="-18%" y="-18%" width="136%" height="136%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#111827" flood-opacity=".16"/>
+    </filter>
+  </defs>
+
+  <rect x="24" y="24" width="208" height="208" rx="52" fill="#FFF7ED"/>
+  <path d="M38 160c44-75 106-116 186-124v196H38Z" fill="#F38020" opacity=".12"/>
+
+  <g filter="url(#shadow)">
+    <path d="M68 66h82l47 47v77a20 20 0 0 1-20 20H68a20 20 0 0 1-20-20V86a20 20 0 0 1 20-20Z" fill="#FFFFFF"/>
+    <path d="M150 66v37a10 10 0 0 0 10 10h37" fill="none" stroke="#111827" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M79 123h64" fill="none" stroke="#111827" stroke-width="12" stroke-linecap="round"/>
+    <path d="M79 158h46" fill="none" stroke="#111827" stroke-width="12" stroke-linecap="round"/>
+
+    <path d="M145 171c0-28 23-51 51-51" fill="none" stroke="url(#orange)" stroke-width="15" stroke-linecap="round"/>
+    <path d="M196 120l-9 19 20-7" fill="none" stroke="url(#orange)" stroke-width="15" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M207 171c0 28-23 51-51 51" fill="none" stroke="#111827" stroke-width="15" stroke-linecap="round"/>
+    <path d="M156 222l9-19-20 7" fill="none" stroke="#111827" stroke-width="15" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="176" cy="171" r="21" fill="#111827"/>
+    <circle cx="176" cy="171" r="8" fill="#F38020"/>
+  </g>
+</svg>
