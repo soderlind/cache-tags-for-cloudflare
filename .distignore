@@ -1,5 +1,7 @@
 # Files and folders excluded from the distributed plugin zip / wp.org SVN.
+.DS_Store
 /.git
+/.wordpress-org
 /.gitattributes
 /.github
 /.gitignore
