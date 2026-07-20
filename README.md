@@ -120,6 +120,17 @@ wp cache-tags purge --all
 wp cache-tags verify
 ```
 
+## External services
+
+This plugin connects to the **Cloudflare API** (`https://api.cloudflare.com`) to verify your credentials and to purge cached content by cache tag. Cloudflare is required for the purging feature; the tagging feature (emitting `Cache-Tag` headers) works without contacting any external service.
+
+Requests are made only after you provide a Cloudflare API token and Zone ID:
+
+- **Verifying credentials** — saving credentials or running `wp cache-tags verify` calls `GET https://api.cloudflare.com/client/v4/user/tokens/verify`, sending your API token (in the `Authorization` header) so Cloudflare can confirm it is valid.
+- **Purging cache** — auto-purge on content changes, manual purges, and `wp cache-tags purge` call `POST https://api.cloudflare.com/client/v4/zones/{zone-id}/purge_cache`, sending your API token (in the `Authorization` header), your Zone ID (in the URL), and the list of cache tags to purge (in the body). No post content, personal data, or visitor information is sent.
+
+Cloudflare is a third-party service provided by Cloudflare, Inc. By using the purging feature you agree to Cloudflare's [Terms of Service](https://www.cloudflare.com/website-terms/) and [Privacy Policy](https://www.cloudflare.com/privacypolicy/).
+
 ## Development
 
 ```bash
