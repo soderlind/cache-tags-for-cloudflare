@@ -14,7 +14,7 @@ Precise Cloudflare cache purging for WordPress: adds Cache-Tag headers and purge
 
 Cache Tags for Cloudflare does two things:
 
-1. **Tagging** — adds a `Cache-Tag` HTTP response header to singular posts, pages, and custom post types so Cloudflare can invalidate them by tag.
+1. **Tagging** — adds a `Cache-Tag` HTTP response header to singular posts, pages, custom post types and taxonomy terms so Cloudflare can invalidate them by tag.
 2. **Purging** — calls the Cloudflare API to purge the relevant tags when content changes (post publish/update/trash/delete and taxonomy term edits).
 
 The two features can be enabled independently.
