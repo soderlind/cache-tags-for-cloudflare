@@ -180,6 +180,43 @@ npm run start       # watch mode
 npm run test:js     # Vitest + Testing Library
 ```
 
+## Testing purging
+
+You do **not** need a public site to test purging — the Cloudflare purge API never fetches your site, it just tells Cloudflare which cache tags to invalidate. Purge by cache-tag (and honoring the `Cache-Tag` response header) is available on **all Cloudflare plans**, including Free.
+
+**1. Logic only (no Cloudflare account).** The unit tests drive the whole tag → resolve → batch pipeline with a fake client:
+
+```bash
+composer test
+```
+
+**2. Real API from a local site (no public site needed).** Add a scoped token and Zone ID (in `wp-config.php` or **Settings → Cache Tags**), then:
+
+```bash
+wp cache-tags verify                       # GET /user/tokens/verify — works on any plan
+wp cache-tags purge --tags=b1-t5,content   # POST /zones/{id}/purge_cache
+```
+
+Both calls succeed from a local install; neither requires the content to be publicly reachable.
+
+**3. Full HIT → purge → MISS.** To watch Cloudflare actually cache a tagged response and drop it on purge, proxy a hostname on a zone you own through Cloudflare — e.g. with a [Tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/) pointing at your local site:
+
+```bash
+brew install cloudflared
+cloudflared tunnel login
+cloudflared tunnel --url http://your-local-site.test   # map a proxied hostname on your zone
+```
+
+Then:
+
+```bash
+curl -sI https://test.yourzone.com/some-post   # note Cache-Tag + cf-cache-status: HIT
+wp cache-tags purge --post=123                 # or trigger any purge front door
+curl -sI https://test.yourzone.com/some-post   # cf-cache-status: MISS (or EXPIRED with Tiered Cache)
+```
+
+Relevant Cloudflare limits (per account, shared across same-plan zones): Free allows 5 purge requests/minute; the `Cache-Tag` header is capped at 16 KB (~1,000 tags) and individual purge tags at 1,024 characters. The plugin already caps the header at 16 KB and batches purges at 30 tags per request.
+
 ## License
 
 GPL-2.0-or-later.
