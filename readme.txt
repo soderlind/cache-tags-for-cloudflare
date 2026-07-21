@@ -103,6 +103,11 @@ Cloudflare is a third-party service provided by Cloudflare, Inc. By using this p
 2. Activate the plugin.
 3. Go to **Settings → Cache Tags** and add your Cloudflare API token and Zone ID (or define the constants in `wp-config.php`).
 
+==  Screenshots ==
+
+1. Purge tab: purge by post type, taxonomy term, everything, or raw tags.
+2. Settings tab: add Cloudflare API token and Zone ID, enable auto-purge, and verify credentials.
+
 == Frequently Asked Questions ==
 
 = How do I get a Cloudflare API token and Zone ID? =
