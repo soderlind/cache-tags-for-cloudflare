@@ -31,10 +31,23 @@ final class GroupPurgeResolverTest extends TestCase {
 		$this->assertSame( [], $this->resolver->forPostType( '  ' ) );
 	}
 
+	public function test_post(): void {
+		$this->assertSame( [ 'b1-p124' ], $this->resolver->forPost( 124 ) );
+		$this->assertSame( [], $this->resolver->forPost( 0 ) );
+	}
+
 	public function test_taxonomy_terms(): void {
+		Functions\when( 'get_term_by' )->alias(
+			static function ( string $field, string $slug, string $taxonomy ) {
+				$map = [ 'news' => 5, 'sport' => 8 ];
+
+				return isset( $map[ $slug ] ) ? new \WP_Term( [ 'term_id' => $map[ $slug ], 'slug' => $slug ] ) : false;
+			}
+		);
+
 		$this->assertSame(
-			[ 'b1-category-news', 'b1-category-sport' ],
-			$this->resolver->forTaxonomyTerms( 'category', [ 'news', ' sport ', '' ] )
+			[ 'b1-t5', 'b1-t8' ],
+			$this->resolver->forTaxonomyTerms( 'category', [ 'news', ' sport ', '', 'unknown' ] )
 		);
 	}
 

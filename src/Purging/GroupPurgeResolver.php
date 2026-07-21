@@ -31,7 +31,19 @@ final class GroupPurgeResolver {
 	}
 
 	/**
+	 * Tags for a single post by ID.
+	 *
+	 * @return array<int, string>
+	 */
+	public function forPost( int $post_id ): array {
+		return $post_id > 0 ? [ 'b' . $this->siteId() . '-p' . (string) $post_id ] : [];
+	}
+
+	/**
 	 * Tags for one or more terms in a taxonomy.
+	 *
+	 * Slugs are resolved to term IDs so the produced tags (`b{site}-t{term_id}`)
+	 * match the tags emitted on responses. Unknown slugs are skipped.
 	 *
 	 * @param array<int, string> $slugs Term slugs.
 	 *
@@ -50,8 +62,14 @@ final class GroupPurgeResolver {
 		foreach ( $slugs as $slug ) {
 			$slug = trim( (string) $slug );
 
-			if ( '' !== $slug ) {
-				$tags[] = 'b' . $site . '-' . $taxonomy . '-' . $slug;
+			if ( '' === $slug ) {
+				continue;
+			}
+
+			$term = get_term_by( 'slug', $slug, $taxonomy );
+
+			if ( $term instanceof \WP_Term ) {
+				$tags[] = 'b' . $site . '-t' . (string) $term->term_id;
 			}
 		}
 

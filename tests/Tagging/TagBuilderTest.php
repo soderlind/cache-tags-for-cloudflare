@@ -22,13 +22,13 @@ final class TagBuilderTest extends TestCase {
 		Functions\when( 'get_object_taxonomies' )->justReturn( [ 'category' ] );
 		Functions\when( 'is_taxonomy_viewable' )->justReturn( true );
 		Functions\when( 'get_the_terms' )->justReturn(
-			[ new WP_Term( [ 'slug' => 'news' ] ), new WP_Term( [ 'slug' => 'sport' ] ) ]
+			[ new WP_Term( [ 'term_id' => 5, 'slug' => 'news' ] ), new WP_Term( [ 'term_id' => 8, 'slug' => 'sport' ] ) ]
 		);
 
 		$post = new WP_Post( [ 'ID' => 42, 'post_type' => 'post' ] );
 
 		$this->assertSame(
-			[ 'content', 'b1', 'b1-p42', 'b1-pt-post', 'b1-category-news', 'b1-category-sport' ],
+			[ 'content', 'b1', 'b1-p42', 'b1-pt-post', 'b1-t5', 'b1-t8' ],
 			( new TagBuilder() )->forPost( $post )
 		);
 	}
@@ -52,12 +52,12 @@ final class TagBuilderTest extends TestCase {
 		Functions\when( 'is_taxonomy_viewable' )->alias(
 			static fn ( string $taxonomy ): bool => 'category' === $taxonomy
 		);
-		Functions\when( 'get_the_terms' )->justReturn( [ new WP_Term( [ 'slug' => 'news' ] ) ] );
+		Functions\when( 'get_the_terms' )->justReturn( [ new WP_Term( [ 'term_id' => 5, 'slug' => 'news' ] ) ] );
 
 		$post = new WP_Post( [ 'ID' => 1, 'post_type' => 'post' ] );
 
 		$this->assertSame(
-			[ 'content', 'b1', 'b1-p1', 'b1-pt-post', 'b1-category-news' ],
+			[ 'content', 'b1', 'b1-p1', 'b1-pt-post', 'b1-t5' ],
 			( new TagBuilder() )->forPost( $post )
 		);
 	}

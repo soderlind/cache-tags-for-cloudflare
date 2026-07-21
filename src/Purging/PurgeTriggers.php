@@ -84,7 +84,7 @@ final class PurgeTriggers {
 		$site = $this->siteId();
 
 		$this->collector->add(
-			$this->filterTags( [ 'b' . $site . '-' . $taxonomy . '-' . $term->slug ], 'term', $term )
+			$this->filterTags( [ 'b' . $site . '-t' . (string) $term->term_id ], 'term', $term )
 		);
 	}
 
@@ -122,7 +122,7 @@ final class PurgeTriggers {
 			}
 
 			foreach ( $terms as $term ) {
-				$tags[] = 'b' . $site . '-' . $taxonomy . '-' . $term->slug;
+				$tags[] = 'b' . $site . '-t' . (string) $term->term_id;
 			}
 		}
 
