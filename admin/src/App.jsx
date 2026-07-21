@@ -441,7 +441,7 @@ function PurgePanel( { groups, verified, addNotice } ) {
 				</div>
 				<p className="ctcf-help">
 					{ __(
-						'Comma-separated, e.g. post-id-42, category-news',
+						'Comma-separated, e.g. b1-p42, b1-category-news',
 						'cache-tags-for-cloudflare'
 					) }
 				</p>

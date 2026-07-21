@@ -7,7 +7,7 @@ downstream CDN can later invalidate them by tag.
 
 **Cache Tag**:
 A short label attached to a cached response identifying content it depends on
-(e.g. `post-id-42`, `category-news`). The unit of both description and invalidation.
+(e.g. `b1-p42`, `b1-category-news`). The unit of both description and invalidation.
 _Avoid_: Surrogate key, cache key, purge key.
 
 **Cache-Tag header**:

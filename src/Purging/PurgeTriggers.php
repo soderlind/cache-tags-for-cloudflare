@@ -81,9 +81,18 @@ final class PurgeTriggers {
 			return;
 		}
 
+		$site = $this->siteId();
+
 		$this->collector->add(
-			$this->filterTags( [ $taxonomy . '-' . $term->slug ], 'term', $term )
+			$this->filterTags( [ 'b' . $site . '-' . $taxonomy . '-' . $term->slug ], 'term', $term )
 		);
+	}
+
+	/**
+	 * The site identifier used to scope tags: the blog ID on multisite, `1` otherwise.
+	 */
+	private function siteId(): string {
+		return is_multisite() ? (string) get_current_blog_id() : '1';
 	}
 
 	/**
@@ -98,7 +107,8 @@ final class PurgeTriggers {
 			return;
 		}
 
-		$tags = [ 'post-id-' . (string) $post->ID ];
+		$site = $this->siteId();
+		$tags = [ 'b' . $site . '-p' . (string) $post->ID ];
 
 		foreach ( get_object_taxonomies( $post->post_type, 'names' ) as $taxonomy ) {
 			if ( ! is_taxonomy_viewable( $taxonomy ) ) {
@@ -112,7 +122,7 @@ final class PurgeTriggers {
 			}
 
 			foreach ( $terms as $term ) {
-				$tags[] = $taxonomy . '-' . $term->slug;
+				$tags[] = 'b' . $site . '-' . $taxonomy . '-' . $term->slug;
 			}
 		}
 

@@ -24,13 +24,13 @@ For singular content:
 
 ```text
 content
-post-id-{ID}
-post-type-{post_type}
-{taxonomy}-{slug}      # for every public taxonomy the post belongs to
-site-id-{blog_id}      # multisite only
+b{id}                  # site scope: b1 on single site, b{blog_id} on multisite
+b{id}-p{ID}
+b{id}-pt-{post_type}
+b{id}-{taxonomy}-{slug}      # for every public taxonomy the post belongs to
 ```
 
-Example: `Cache-Tag: content,post-id-42,post-type-post,category-news`
+Example: `Cache-Tag: content,b1,b1-p42,b1-pt-post,b1-category-news`
 
 ## Installation
 
@@ -73,7 +73,7 @@ Otherwise configure them under **Settings → Cache Tags** (see [Admin UI](#admi
 
 **Settings → Cache Tags** is a React app (`@wordpress/components`) with two tabs:
 
-- **Purge** — manual, on-demand purges by group: a whole post type (`post-type-{type}`), a taxonomy term (`{taxonomy}-{slug}`), everything (`content`), or raw comma-separated tags. The purge tools stay locked until valid credentials have been saved and verified.
+- **Purge** — manual, on-demand purges by group: a whole post type (`b{id}-pt-{type}`), a taxonomy term (`b{id}-{taxonomy}-{slug}`), everything (`content`), or raw comma-separated tags. The purge tools stay locked until valid credentials have been saved and verified.
 - **Settings** — toggles for header emission, auto-purge, and debug logging, plus the API token and Zone ID (read-only when defined via constants). **Save settings** persists the values and automatically verifies the connection; a **Test connection** button is also available.
 
 ## Automatic purging
@@ -82,8 +82,8 @@ When **Auto-purge on changes** is enabled (and valid credentials are set), the p
 
 | Event | Purges |
 | --- | --- |
-| Post published, updated, trashed, or untrashed (any transition **to or from** the published status) | `post-id-{ID}` + the post's `{taxonomy}-{slug}` tags |
-| Post permanently deleted | `post-id-{ID}` + its `{taxonomy}-{slug}` tags |
+| Post published, updated, trashed, or untrashed (any transition **to or from** the published status) | `b{id}-p{ID}` + the post's `b{id}-{taxonomy}-{slug}` tags |
+| Post permanently deleted | `b{id}-p{ID}` + its `b{id}-{taxonomy}-{slug}` tags |
 | Taxonomy term edited or deleted | `{taxonomy}-{slug}` |
 
 Details:
@@ -115,7 +115,7 @@ add_action( 'cache_tags_for_cloudflare/purge_failed', function ( array $tags, st
 ## WP-CLI
 
 ```bash
-wp cache-tags purge --tags=post-id-42,category-news
+wp cache-tags purge --tags=b1-p42,b1-category-news
 wp cache-tags purge --all
 wp cache-tags verify
 ```
