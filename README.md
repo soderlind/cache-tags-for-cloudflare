@@ -97,45 +97,7 @@ Details:
 
 ## Extensibility
 
-```php
-// Tags emitted on a response.
-add_filter( 'cache_tags_for_cloudflare/tags', function ( array $tags, WP_Post $post ) {
-	$tags[] = 'author-' . $post->post_author;
-	return $tags;
-}, 10, 2 );
-
-// Tags purged on a content change.
-add_filter( 'cache_tags_for_cloudflare/purge_tags', function ( array $tags, string $context, $object ) {
-	return $tags;
-}, 10, 3 );
-
-// React to purges.
-add_action( 'cache_tags_for_cloudflare/purged', function ( array $tags ) {} );
-add_action( 'cache_tags_for_cloudflare/purge_failed', function ( array $tags, string $message ) {} );
-```
-
-### Programmatic purging
-
-Trigger an immediate purge from your own code with these action hooks (each maps to the shared purge façade):
-
-```php
-// Purge a whole post type.
-do_action( 'cache_tags_for_cloudflare/purge_post_type', 'page' );
-
-// Purge one or more taxonomy terms (by slug).
-do_action( 'cache_tags_for_cloudflare/purge_terms', 'category', [ 'news', 'sport' ] );
-
-// Purge a single post by ID.
-do_action( 'cache_tags_for_cloudflare/purge_post', 42 );
-
-// Purge everything (the site-wide `content` tag).
-do_action( 'cache_tags_for_cloudflare/purge_all' );
-
-// Purge raw cache tags (array or comma-separated string).
-do_action( 'cache_tags_for_cloudflare/purge', [ 'b1-t5', 'content' ] );
-```
-
-These hooks purge **immediately** (they are not batched on `shutdown` like auto-purge), so each call results in a Cloudflare API request. Term slugs passed to `.../purge_terms` are resolved to their numeric term IDs automatically.
+The plugin exposes filters (`cache_tags_for_cloudflare/tags`, `.../purge_tags`), result actions (`.../purged`, `.../purge_failed`), and action hooks for programmatic purging (`.../purge_post`, `.../purge_terms`, `.../purge_post_type`, `.../purge_all`, `.../purge`). See the [Developer guide](docs/DEVELOPER.md) for full documentation and examples.
 
 ## WP-CLI
 
@@ -161,61 +123,13 @@ Cloudflare is a third-party service provided by Cloudflare, Inc. By using the pu
 
 ## Development
 
+Build tooling, hooks, programmatic purging, and how to test purging (including without a public site) are documented in the [Developer guide](docs/DEVELOPER.md).
+
 ```bash
 composer install
-composer lint      # PHPCS (WordPress-Extra + PHPCompatibility)
-composer analyse   # PHPStan level 6
-composer test      # PHPUnit + Brain Monkey
-composer check     # all of the above
+composer check      # PHPCS + PHPStan + PHPUnit
+npm install && npm run build   # rebuild the React admin UI
 ```
-
-### Admin UI (JavaScript)
-
-The compiled assets in `build/` are committed, so the plugin runs from a checkout. To rebuild or test the React app:
-
-```bash
-npm install
-npm run build       # compile admin/src into build/
-npm run start       # watch mode
-npm run test:js     # Vitest + Testing Library
-```
-
-## Testing purging
-
-You do **not** need a public site to test purging — the Cloudflare purge API never fetches your site, it just tells Cloudflare which cache tags to invalidate. Purge by cache-tag (and honoring the `Cache-Tag` response header) is available on **all Cloudflare plans**, including Free.
-
-**1. Logic only (no Cloudflare account).** The unit tests drive the whole tag → resolve → batch pipeline with a fake client:
-
-```bash
-composer test
-```
-
-**2. Real API from a local site (no public site needed).** Add a scoped token and Zone ID (in `wp-config.php` or **Settings → Cache Tags**), then:
-
-```bash
-wp cache-tags verify                       # GET /user/tokens/verify — works on any plan
-wp cache-tags purge --tags=b1-t5,content   # POST /zones/{id}/purge_cache
-```
-
-Both calls succeed from a local install; neither requires the content to be publicly reachable.
-
-**3. Full HIT → purge → MISS.** To watch Cloudflare actually cache a tagged response and drop it on purge, proxy a hostname on a zone you own through Cloudflare — e.g. with a [Tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/) pointing at your local site:
-
-```bash
-brew install cloudflared
-cloudflared tunnel login
-cloudflared tunnel --url http://your-local-site.test   # map a proxied hostname on your zone
-```
-
-Then:
-
-```bash
-curl -sI https://test.yourzone.com/some-post   # note Cache-Tag + cf-cache-status: HIT
-wp cache-tags purge --post=123                 # or trigger any purge front door
-curl -sI https://test.yourzone.com/some-post   # cf-cache-status: MISS (or EXPIRED with Tiered Cache)
-```
-
-Relevant Cloudflare limits (per account, shared across same-plan zones): Free allows 5 purge requests/minute; the `Cache-Tag` header is capped at 16 KB (~1,000 tags) and individual purge tags at 1,024 characters. The plugin already caps the header at 16 KB and batches purges at 30 tags per request.
 
 ## License
 

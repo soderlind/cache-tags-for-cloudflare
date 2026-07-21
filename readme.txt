@@ -62,35 +62,7 @@ Only public post types and taxonomies are considered; revisions and autosaves ar
 
 = Extending the tags =
 
-Filter the tags emitted on a response:
-
-`add_filter( 'cache_tags_for_cloudflare/tags', function ( array $tags, WP_Post $post ) {
-	$tags[] = 'author-' . $post->post_author;
-	return $tags;
-}, 10, 2 );`
-
-Filter the tags purged on a content change:
-
-`add_filter( 'cache_tags_for_cloudflare/purge_tags', function ( array $tags, string $context, $object ) {
-	return $tags;
-}, 10, 3 );`
-
-React to purges:
-
-`add_action( 'cache_tags_for_cloudflare/purged', function ( array $tags ) {} );`
-`add_action( 'cache_tags_for_cloudflare/purge_failed', function ( array $tags, string $message ) {} );`
-
-= Programmatic purging =
-
-Trigger an immediate purge from your own code with these action hooks:
-
-`do_action( 'cache_tags_for_cloudflare/purge_post_type', 'page' );`
-`do_action( 'cache_tags_for_cloudflare/purge_terms', 'category', [ 'news', 'sport' ] );`
-`do_action( 'cache_tags_for_cloudflare/purge_post', 42 );`
-`do_action( 'cache_tags_for_cloudflare/purge_all' );`
-`do_action( 'cache_tags_for_cloudflare/purge', [ 'b1-t5', 'content' ] );`
-
-These hooks purge immediately (they are not batched on `shutdown` like auto-purge). Term slugs passed to `.../purge_terms` are resolved to their numeric term IDs automatically.
+The plugin exposes filters (`cache_tags_for_cloudflare/tags`, `cache_tags_for_cloudflare/purge_tags`), result actions (`cache_tags_for_cloudflare/purged`, `cache_tags_for_cloudflare/purge_failed`), and action hooks for programmatic purging (`cache_tags_for_cloudflare/purge_post`, `/purge_terms`, `/purge_post_type`, `/purge_all`, `/purge`). See the Developer guide for full documentation and examples: https://github.com/soderlind/cache-tags-for-cloudflare/blob/main/docs/DEVELOPER.md
 
 = WP-CLI =
 
