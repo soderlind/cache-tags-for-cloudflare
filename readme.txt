@@ -103,13 +103,33 @@ Cloudflare is a third-party service provided by Cloudflare, Inc. By using this p
 
 == Frequently Asked Questions ==
 
-= Do I need a Cloudflare Enterprise plan? =
+= How do I get a Cloudflare API token and Zone ID? =
 
-No. The `Cache-Tag` header and purge-by-tag are available on all Cloudflare plans (Free, Pro, Business, and Enterprise). Only the purge API rate limits differ by plan.
+In the Cloudflare dashboard, create a scoped API token (**My Profile → API Tokens → Create Token**) with the **Zone → Cache Purge** permission, limited to the zone you want to purge. Your Zone ID is on that zone's **Overview** page. Add both under **Settings → Cache Tags**, or define `CACHE_TAGS_CF_API_TOKEN` and `CACHE_TAGS_CF_ZONE_ID` in `wp-config.php`.
+
+= Do I need to configure anything in Cloudflare? =
+
+No extra setup is required. Cloudflare reads the `Cache-Tag` header the plugin adds automatically, and the plugin purges by tag through the API. Just make sure your site is proxied through Cloudflare (orange-clouded) so responses are cached.
 
 = Why don't I see the Cache-Tag header on my live site? =
 
-When traffic is proxied through Cloudflare, Cloudflare consumes the `Cache-Tag` header and strips it before the response reaches visitors. Check it at the origin: `curl -I https://example.com/sample-post/`.
+When traffic is proxied through Cloudflare, Cloudflare consumes the `Cache-Tag` header and strips it before the response reaches visitors. Check it at the origin instead: `curl -I https://example.com/sample-post/`.
+
+= Why isn't my content being purged automatically? =
+
+Auto-purge only runs when **Auto-purge on changes** is enabled and valid credentials are saved and verified. It also only fires for public post types/taxonomies on real content changes — draft-only edits, comments, menu/widget/theme changes, and plugin/core updates are ignored. For those, use the Purge tab, WP-CLI, or a purge hook. Enable debug logging on the Settings tab to see what was purged.
+
+= Can I purge manually or from my own code? =
+
+Yes. Use the **Purge** tab (by post type, taxonomy term, everything, or raw tags), the `wp cache-tags purge` WP-CLI command, or the programmatic purge hooks (`cache_tags_for_cloudflare/purge_post`, `/purge_terms`, `/purge_all`, and more). See the [Developer guide](https://github.com/soderlind/cache-tags-for-cloudflare/blob/main/docs/DEVELOPER.md).
+
+= Does it work on multisite? =
+
+Yes. Every tag is scoped to the current blog (`b{blog_id}`), so purges on one subsite never affect another. Each subsite uses its own Cloudflare credentials.
+
+= Does the plugin send any personal or content data to Cloudflare? =
+
+No. Requests to Cloudflare contain only your API token, Zone ID, and the list of cache tags to purge — never post content, personal data, or visitor information. See the **External services** section above for the exact endpoints.
 
 == Changelog ==
 
