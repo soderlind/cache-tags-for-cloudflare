@@ -75,7 +75,7 @@ Otherwise configure them under **Settings → Cache Tags** (see [Admin UI](#admi
 
 **Settings → Cache Tags** is a React app (`@wordpress/components`) with two tabs:
 
-- **Purge** — manual, on-demand purges by group: a whole post type (`b{id}-pt-{type}`), a taxonomy term (`b{id}-t{term_id}`), everything (`content`), or raw comma-separated tags. The purge tools stay locked until valid credentials have been saved and verified.
+- **Purge** — manual, on-demand purges by group: a whole post type (`b{id}-pt-{type}`), a taxonomy term (`b{id}-t{term_id}`), everything on this site (`b{id}`), or raw comma-separated tags. The purge tools stay locked until valid credentials have been saved and verified.
 - **Settings** — toggles for header emission, auto-purge, and debug logging, plus the API token and Zone ID (read-only when defined via constants). **Save settings** persists the values and automatically verifies the connection; a **Test connection** button is also available.
 
 ## Automatic purging
@@ -115,6 +115,8 @@ wp cache-tags purge --tags=b1-t5,content
 wp cache-tags purge --all
 wp cache-tags verify
 ```
+
+On **multisite**, `--all` (and the **everything** group / `purge_all` hook) purge only the current subsite via its `b{id}` tag. To purge every site sharing the Cloudflare zone at once, purge the global `content` tag directly: `wp cache-tags purge --tags=content`.
 
 ## External services
 

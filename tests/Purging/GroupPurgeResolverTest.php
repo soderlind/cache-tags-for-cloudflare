@@ -56,7 +56,7 @@ final class GroupPurgeResolverTest extends TestCase {
 	}
 
 	public function test_everything(): void {
-		$this->assertSame( [ 'content' ], $this->resolver->everything() );
+		$this->assertSame( [ 'b1' ], $this->resolver->everything() );
 	}
 
 	public function test_raw_tags(): void {

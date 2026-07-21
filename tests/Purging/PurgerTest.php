@@ -66,7 +66,7 @@ final class PurgerTest extends TestCase {
 	public function test_purge_everything(): void {
 		$this->purger->purgeEverything();
 
-		$this->assertSame( [ 'content' ], $this->client->received );
+		$this->assertSame( [ 'b1' ], $this->client->received );
 	}
 
 	public function test_purge_terms(): void {

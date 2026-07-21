@@ -54,7 +54,7 @@ final class Purger {
 	}
 
 	/**
-	 * Purge everything (the global `content` tag).
+	 * Purge everything for the current site (the blog-scoped `b{site}` tag).
 	 */
 	public function purgeEverything(): PurgeResult {
 		return $this->run( $this->resolver->everything() );

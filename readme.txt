@@ -4,7 +4,7 @@ Tags: cloudflare, cache, cache-tag, purge, cdn
 Requires at least: 6.8
 Tested up to: 7.0
 Requires PHP: 8.3
-Stable tag: 1.3.0
+Stable tag: 1.3.1
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -79,6 +79,8 @@ See the [Developer guide](https://github.com/soderlind/cache-tags-for-cloudflare
 `wp cache-tags purge --all`
 `wp cache-tags verify`
 
+On multisite, `--all` purges only the current subsite (via its `b{id}` tag). To purge every site sharing the Cloudflare zone at once, purge the global `content` tag: `wp cache-tags purge --tags=content`.
+
 == External services ==
 
 This plugin connects to the **Cloudflare API** (`https://api.cloudflare.com`) to verify your credentials and to purge cached content by cache tag. Cloudflare is required for the plugin's purging feature to work; the tagging feature (emitting `Cache-Tag` headers) works without contacting any external service.
@@ -125,13 +127,16 @@ Yes. Use the **Purge** tab (by post type, taxonomy term, everything, or raw tags
 
 = Does it work on multisite? =
 
-Yes. Every tag is scoped to the current blog (`b{blog_id}`), so purges on one subsite never affect another. Each subsite uses its own Cloudflare credentials.
+Yes. Every tag is scoped to the current blog (`b{blog_id}`), so purges on one subsite never affect another. Each subsite uses its own Cloudflare credentials. "Purge everything" (the Purge tab, `--all`, or `purge_all`) is also scoped to the current subsite; to purge every site sharing the same Cloudflare zone at once, purge the global `content` tag with `wp cache-tags purge --tags=content`.
 
 = Does the plugin send any personal or content data to Cloudflare? =
 
 No. Requests to Cloudflare contain only your API token, Zone ID, and the list of cache tags to purge — never post content, personal data, or visitor information. See the **External services** section above for the exact endpoints.
 
 == Changelog ==
+
+= 1.3.1 =
+* Fixed: "Purge everything" (the Purge tab, `wp cache-tags purge --all`, and the `cache_tags_for_cloudflare/purge_all` hook) now purges the blog-scoped `b{id}` tag instead of the shared `content` tag. On multisite this keeps the purge scoped to the current subsite instead of clearing every site sharing the Cloudflare zone. To purge every site in the zone at once, purge the `content` tag directly (e.g. `wp cache-tags purge --tags=content`).
 
 = 1.3.0 =
 * Taxonomy cache tags now use the numeric term ID: `b{id}-t{term_id}` (e.g. `b1-t5`) instead of `b{id}-{taxonomy}-{slug}`. Shorter and stable across term renames and slug changes.

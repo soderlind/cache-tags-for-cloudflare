@@ -77,7 +77,7 @@ do_action( 'cache_tags_for_cloudflare/purge_terms', 'category', [ 'news', 'sport
 // Purge a single post by ID.
 do_action( 'cache_tags_for_cloudflare/purge_post', 42 );
 
-// Purge everything (the site-wide `content` tag).
+// Purge everything on the current site (the blog-scoped `b{id}` tag).
 do_action( 'cache_tags_for_cloudflare/purge_all' );
 
 // Purge raw cache tags (array or comma-separated string).
@@ -95,6 +95,8 @@ add_action( 'woocommerce_product_set_stock', function ( $product ) {
 ```
 
 These hooks purge **immediately** (they are not batched on `shutdown` like auto-purge), so each call results in a Cloudflare API request. Term slugs passed to `.../purge_terms` are resolved to their numeric term IDs automatically.
+
+On **multisite**, `.../purge_all` purges only the current subsite via its `b{id}` tag. To purge every site sharing the Cloudflare zone at once, purge the global `content` tag directly with `do_action( 'cache_tags_for_cloudflare/purge', 'content' )`.
 
 ## Development
 

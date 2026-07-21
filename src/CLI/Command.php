@@ -34,7 +34,9 @@ final class Command {
 	 * ## OPTIONS
 	 *
 	 * [--all]
-	 * : Purge the `content` tag, invalidating every tagged response.
+	 * : Purge the current site's `b{site}` tag, invalidating every tagged response for this site.
+	 * On multisite this stays scoped to the current subsite; use `--tags=content` to purge every
+	 * site sharing the zone.
 	 *
 	 * [--post-type=<post_type>]
 	 * : Purge a whole post type (e.g. `page`).

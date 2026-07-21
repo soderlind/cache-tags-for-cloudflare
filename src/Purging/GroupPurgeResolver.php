@@ -84,12 +84,16 @@ final class GroupPurgeResolver {
 	}
 
 	/**
-	 * The tag that invalidates every tagged response.
+	 * The tag that invalidates every tagged response for the current site.
+	 *
+	 * Uses the blog-scoped `b{site}` tag (emitted on every tagged response) rather
+	 * than the shared `content` tag, so on multisite a purge stays scoped to the
+	 * current subsite instead of clearing every site in the zone.
 	 *
 	 * @return array<int, string>
 	 */
 	public function everything(): array {
-		return [ 'content' ];
+		return [ 'b' . $this->siteId() ];
 	}
 
 	/**
