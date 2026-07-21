@@ -97,7 +97,13 @@ Details:
 
 ## Extensibility
 
-The plugin exposes filters (`cache_tags_for_cloudflare/tags`, `.../purge_tags`), result actions (`.../purged`, `.../purge_failed`), and action hooks for programmatic purging (`.../purge_post`, `.../purge_terms`, `.../purge_post_type`, `.../purge_all`, `.../purge`). See the [Developer guide](docs/DEVELOPER.md) for full documentation and examples.
+The plugin exposes hooks for customizing tags and purging from your own code:
+
+- **Filters:** `cache_tags_for_cloudflare/tags`, `cache_tags_for_cloudflare/purge_tags`
+- **Result actions:** `cache_tags_for_cloudflare/purged`, `cache_tags_for_cloudflare/purge_failed`
+- **Programmatic purging:** `cache_tags_for_cloudflare/purge_post`, `.../purge_terms`, `.../purge_post_type`, `.../purge_all`, `.../purge`
+
+See the [Developer guide](docs/DEVELOPER.md) for full documentation and examples.
 
 ## WP-CLI
 

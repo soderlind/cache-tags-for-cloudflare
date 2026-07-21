@@ -60,9 +60,15 @@ When **Auto-purge on changes** is enabled and valid credentials are set, the plu
 
 Only public post types and taxonomies are considered; revisions and autosaves are ignored. Tags collected during a request are de-duplicated and sent as a single batched purge after the response (in Cloudflare's 30-tags-per-request batches). Draft-only edits, comments, menu/widget/theme changes, and plugin/core updates do not trigger a purge — use the Purge tab, WP-CLI, or the `cache_tags_for_cloudflare/purge_tags` filter for those. Static files such as images are served outside WordPress and are not tagged or purged by tag.
 
-= Extending the tags =
+= Hooks and programmatic purging =
 
-The plugin exposes filters (`cache_tags_for_cloudflare/tags`, `cache_tags_for_cloudflare/purge_tags`), result actions (`cache_tags_for_cloudflare/purged`, `cache_tags_for_cloudflare/purge_failed`), and action hooks for programmatic purging (`cache_tags_for_cloudflare/purge_post`, `/purge_terms`, `/purge_post_type`, `/purge_all`, `/purge`). See the [Developer guide](https://github.com/soderlind/cache-tags-for-cloudflare/blob/main/docs/DEVELOPER.md) for full documentation and examples.
+The plugin exposes hooks for customizing tags and purging from your own code:
+
+* Filters: `cache_tags_for_cloudflare/tags`, `cache_tags_for_cloudflare/purge_tags`
+* Result actions: `cache_tags_for_cloudflare/purged`, `cache_tags_for_cloudflare/purge_failed`
+* Programmatic purging: `cache_tags_for_cloudflare/purge_post`, `/purge_terms`, `/purge_post_type`, `/purge_all`, `/purge`
+
+See the [Developer guide](https://github.com/soderlind/cache-tags-for-cloudflare/blob/main/docs/DEVELOPER.md) for full documentation and examples.
 
 = WP-CLI =
 
