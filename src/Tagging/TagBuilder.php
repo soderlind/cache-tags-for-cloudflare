@@ -55,7 +55,7 @@ final class TagBuilder {
 	}
 
 	/**
-	 * Build `{taxonomy}-{slug}` tags for every public taxonomy the post belongs to.
+	 * Build `b{site}-t{term_id}` tags for every public taxonomy the post belongs to.
 	 *
 	 * @param WP_Post $post Queried post.
 	 * @param string  $site Site identifier used to scope the tags.
@@ -78,7 +78,7 @@ final class TagBuilder {
 			}
 
 			foreach ( $terms as $term ) {
-				$tags[] = 'b' . $site . '-' . $taxonomy . '-' . $term->slug;
+				$tags[] = 'b' . $site . '-t' . (string) $term->term_id;
 			}
 		}
 

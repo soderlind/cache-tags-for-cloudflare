@@ -27,10 +27,12 @@ content
 b{id}                  # site scope: b1 on single site, b{blog_id} on multisite
 b{id}-p{ID}
 b{id}-pt-{post_type}
-b{id}-{taxonomy}-{slug}      # for every public taxonomy the post belongs to
+b{id}-t{term_id}       # for every public taxonomy term the post belongs to
 ```
 
-Example: `Cache-Tag: content,b1,b1-p42,b1-pt-post,b1-category-news`
+Example: `Cache-Tag: content,b1,b1-p42,b1-pt-post,b1-t5`
+
+Term tags use the numeric term ID (`b1-t5`), so they stay stable when a term is renamed or its slug changes.
 
 ## Installation
 
@@ -73,7 +75,7 @@ Otherwise configure them under **Settings → Cache Tags** (see [Admin UI](#admi
 
 **Settings → Cache Tags** is a React app (`@wordpress/components`) with two tabs:
 
-- **Purge** — manual, on-demand purges by group: a whole post type (`b{id}-pt-{type}`), a taxonomy term (`b{id}-{taxonomy}-{slug}`), everything (`content`), or raw comma-separated tags. The purge tools stay locked until valid credentials have been saved and verified.
+- **Purge** — manual, on-demand purges by group: a whole post type (`b{id}-pt-{type}`), a taxonomy term (`b{id}-t{term_id}`), everything (`content`), or raw comma-separated tags. The purge tools stay locked until valid credentials have been saved and verified.
 - **Settings** — toggles for header emission, auto-purge, and debug logging, plus the API token and Zone ID (read-only when defined via constants). **Save settings** persists the values and automatically verifies the connection; a **Test connection** button is also available.
 
 ## Automatic purging
@@ -82,9 +84,9 @@ When **Auto-purge on changes** is enabled (and valid credentials are set), the p
 
 | Event | Purges |
 | --- | --- |
-| Post published, updated, trashed, or untrashed (any transition **to or from** the published status) | `b{id}-p{ID}` + the post's `b{id}-{taxonomy}-{slug}` tags |
-| Post permanently deleted | `b{id}-p{ID}` + its `b{id}-{taxonomy}-{slug}` tags |
-| Taxonomy term edited or deleted | `{taxonomy}-{slug}` |
+| Post published, updated, trashed, or untrashed (any transition **to or from** the published status) | `b{id}-p{ID}` + the post's `b{id}-t{term_id}` tags |
+| Post permanently deleted | `b{id}-p{ID}` + its `b{id}-t{term_id}` tags |
+| Taxonomy term edited or deleted | `b{id}-t{term_id}` |
 
 Details:
 
@@ -112,10 +114,36 @@ add_action( 'cache_tags_for_cloudflare/purged', function ( array $tags ) {} );
 add_action( 'cache_tags_for_cloudflare/purge_failed', function ( array $tags, string $message ) {} );
 ```
 
+### Programmatic purging
+
+Trigger an immediate purge from your own code with these action hooks (each maps to the shared purge façade):
+
+```php
+// Purge a whole post type.
+do_action( 'cache_tags_for_cloudflare/purge_post_type', 'page' );
+
+// Purge one or more taxonomy terms (by slug).
+do_action( 'cache_tags_for_cloudflare/purge_terms', 'category', [ 'news', 'sport' ] );
+
+// Purge a single post by ID.
+do_action( 'cache_tags_for_cloudflare/purge_post', 42 );
+
+// Purge everything (the site-wide `content` tag).
+do_action( 'cache_tags_for_cloudflare/purge_all' );
+
+// Purge raw cache tags (array or comma-separated string).
+do_action( 'cache_tags_for_cloudflare/purge', [ 'b1-t5', 'content' ] );
+```
+
+These hooks purge **immediately** (they are not batched on `shutdown` like auto-purge), so each call results in a Cloudflare API request. Term slugs passed to `.../purge_terms` are resolved to their numeric term IDs automatically.
+
 ## WP-CLI
 
 ```bash
-wp cache-tags purge --tags=b1-p42,b1-category-news
+wp cache-tags purge --post-type=page
+wp cache-tags purge --taxonomy=category --terms=news,sport
+wp cache-tags purge --post=42
+wp cache-tags purge --tags=b1-t5,content
 wp cache-tags purge --all
 wp cache-tags verify
 ```

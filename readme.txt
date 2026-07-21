@@ -4,7 +4,7 @@ Tags: cloudflare, cache, cache-tag, purge, cdn
 Requires at least: 6.8
 Tested up to: 7.0
 Requires PHP: 8.3
-Stable tag: 1.2.0
+Stable tag: 1.3.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -29,11 +29,13 @@ For singular content the plugin emits:
 * `b{id}` (site scope: `b1` on single site, `b{blog_id}` on multisite)
 * `b{id}-p{ID}`
 * `b{id}-pt-{post_type}`
-* `b{id}-{taxonomy}-{slug}` for every public taxonomy the post belongs to
+* `b{id}-t{term_id}` for every public taxonomy term the post belongs to
 
 Example header:
 
-`Cache-Tag: content,b1,b1-p42,b1-pt-post,b1-category-news`
+`Cache-Tag: content,b1,b1-p42,b1-pt-post,b1-t5`
+
+Term tags use the numeric term ID (`b1-t5`), so they stay stable when a term is renamed or its slug changes.
 
 = Credentials =
 
@@ -52,9 +54,9 @@ The **Settings → Cache Tags** screen has a **Purge** tab for manual, on-demand
 
 When **Auto-purge on changes** is enabled and valid credentials are set, the plugin purges the affected tags automatically on these events:
 
-* Post published, updated, trashed, or untrashed (any transition to or from the published status) — purges `b{id}-p{ID}` plus the post's `b{id}-{taxonomy}-{slug}` tags.
-* Post permanently deleted — purges `b{id}-p{ID}` and its `b{id}-{taxonomy}-{slug}` tags.
-* Taxonomy term edited or deleted — purges `{taxonomy}-{slug}`.
+* Post published, updated, trashed, or untrashed (any transition to or from the published status) — purges `b{id}-p{ID}` plus the post's `b{id}-t{term_id}` tags.
+* Post permanently deleted — purges `b{id}-p{ID}` and its `b{id}-t{term_id}` tags.
+* Taxonomy term edited or deleted — purges `b{id}-t{term_id}`.
 
 Only public post types and taxonomies are considered; revisions and autosaves are ignored. Tags collected during a request are de-duplicated and sent as a single batched purge after the response (in Cloudflare's 30-tags-per-request batches). Draft-only edits, comments, menu/widget/theme changes, and plugin/core updates do not trigger a purge — use the Purge tab, WP-CLI, or the `cache_tags_for_cloudflare/purge_tags` filter for those. Static files such as images are served outside WordPress and are not tagged or purged by tag.
 
@@ -78,9 +80,24 @@ React to purges:
 `add_action( 'cache_tags_for_cloudflare/purged', function ( array $tags ) {} );`
 `add_action( 'cache_tags_for_cloudflare/purge_failed', function ( array $tags, string $message ) {} );`
 
+= Programmatic purging =
+
+Trigger an immediate purge from your own code with these action hooks:
+
+`do_action( 'cache_tags_for_cloudflare/purge_post_type', 'page' );`
+`do_action( 'cache_tags_for_cloudflare/purge_terms', 'category', [ 'news', 'sport' ] );`
+`do_action( 'cache_tags_for_cloudflare/purge_post', 42 );`
+`do_action( 'cache_tags_for_cloudflare/purge_all' );`
+`do_action( 'cache_tags_for_cloudflare/purge', [ 'b1-t5', 'content' ] );`
+
+These hooks purge immediately (they are not batched on `shutdown` like auto-purge). Term slugs passed to `.../purge_terms` are resolved to their numeric term IDs automatically.
+
 = WP-CLI =
 
-`wp cache-tags purge --tags=b1-p42,b1-category-news`
+`wp cache-tags purge --post-type=page`
+`wp cache-tags purge --taxonomy=category --terms=news,sport`
+`wp cache-tags purge --post=42`
+`wp cache-tags purge --tags=b1-t5,content`
 `wp cache-tags purge --all`
 `wp cache-tags verify`
 
@@ -117,6 +134,11 @@ No. The `Cache-Tag` header and purge-by-tag are available on all Cloudflare plan
 When traffic is proxied through Cloudflare, Cloudflare consumes the `Cache-Tag` header and strips it before the response reaches visitors. Check it at the origin: `curl -I https://example.com/sample-post/`.
 
 == Changelog ==
+
+= 1.3.0 =
+* Taxonomy cache tags now use the numeric term ID: `b{id}-t{term_id}` (e.g. `b1-t5`) instead of `b{id}-{taxonomy}-{slug}`. Shorter and stable across term renames and slug changes.
+* Added programmatic purging via action hooks: `cache_tags_for_cloudflare/purge_post_type`, `/purge_terms`, `/purge_post`, `/purge_all`, and `/purge` (raw tags). These purge immediately.
+* Added structured WP-CLI flags: `--post-type`, `--taxonomy` with `--terms`, and `--post`, alongside the existing `--tags` and `--all`.
 
 = 1.2.0 =
 * Shortened the cache-tag vocabulary and scoped every tag to the blog. Tags are now `content`, `b{id}`, `b{id}-p{ID}`, `b{id}-pt-{post_type}`, and `b{id}-{taxonomy}-{slug}` (e.g. `b1-p42`, `b1-category-news`). On multisite the current blog ID is used; single sites use `b1`. Replaces the previous `post-id-`, `post-type-`, `{taxonomy}-`, and `site-id-` tags.

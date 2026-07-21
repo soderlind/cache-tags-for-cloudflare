@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-07-21
+
+### Added
+
+- Programmatic purging via action hooks: `cache_tags_for_cloudflare/purge_post_type`, `.../purge_terms`, `.../purge_post`, `.../purge_all`, and `.../purge` (raw tags). Backed by a shared purge façade; these purges run immediately rather than being batched on `shutdown`.
+- Structured WP-CLI flags: `wp cache-tags purge --post-type=<type>`, `--taxonomy=<tax> --terms=<slugs>`, and `--post=<id>`, alongside the existing `--tags=` and `--all`.
+
+### Changed
+
+- Taxonomy cache tags now use the numeric term ID: `b{id}-t{term_id}` (e.g. `b1-t5`) instead of `b{id}-{taxonomy}-{slug}`. Shorter and stable across term renames and slug changes.
+
 ## [1.2.0] - 2026-07-21
 
 - Shortened the cache-tag vocabulary and scoped every tag to the blog. Tags are now `content`, `b{id}`, `b{id}-p{ID}`, `b{id}-pt-{post_type}`, and `b{id}-{taxonomy}-{slug}` (e.g. `b1-p42`, `b1-category-news`). On multisite the current blog ID is used; single sites use `b1`. Replaces the previous `post-id-`, `post-type-`, `{taxonomy}-`, and `site-id-` tags.
