@@ -62,7 +62,7 @@ Only public post types and taxonomies are considered; revisions and autosaves ar
 
 = Extending the tags =
 
-The plugin exposes filters (`cache_tags_for_cloudflare/tags`, `cache_tags_for_cloudflare/purge_tags`), result actions (`cache_tags_for_cloudflare/purged`, `cache_tags_for_cloudflare/purge_failed`), and action hooks for programmatic purging (`cache_tags_for_cloudflare/purge_post`, `/purge_terms`, `/purge_post_type`, `/purge_all`, `/purge`). See the Developer guide for full documentation and examples: https://github.com/soderlind/cache-tags-for-cloudflare/blob/main/docs/DEVELOPER.md
+The plugin exposes filters (`cache_tags_for_cloudflare/tags`, `cache_tags_for_cloudflare/purge_tags`), result actions (`cache_tags_for_cloudflare/purged`, `cache_tags_for_cloudflare/purge_failed`), and action hooks for programmatic purging (`cache_tags_for_cloudflare/purge_post`, `/purge_terms`, `/purge_post_type`, `/purge_all`, `/purge`). See the [Developer guide](https://github.com/soderlind/cache-tags-for-cloudflare/blob/main/docs/DEVELOPER.md) for full documentation and examples.
 
 = WP-CLI =
 
