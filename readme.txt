@@ -81,7 +81,7 @@ See the [Developer guide](https://github.com/soderlind/cache-tags-for-cloudflare
 
 On multisite, `--all` purges only the current subsite (via its `b{id}` tag). To purge every site sharing the Cloudflare zone at once, purge the global `content` tag: `wp cache-tags purge --tags=content`.
 
-== External services ==
+= External services =
 
 This plugin connects to the **Cloudflare API** (`https://api.cloudflare.com`) to verify your credentials and to purge cached content by cache tag. Cloudflare is required for the plugin's purging feature to work; the tagging feature (emitting `Cache-Tag` headers) works without contacting any external service.
 
