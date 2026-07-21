@@ -60,7 +60,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Dismissible admin notice surfacing recurring purge failures.
 - WP-CLI commands: `wp cache-tags purge --tags=<tags>|--all` and `wp cache-tags verify`.
 
-[Unreleased]: https://github.com/soderlind/cache-tags-for-cloudflare/compare/v1.1.1...HEAD
+[Unreleased]: https://github.com/soderlind/cache-tags-for-cloudflare/compare/v1.3.0...HEAD
+[1.3.0]: https://github.com/soderlind/cache-tags-for-cloudflare/compare/v1.2.0...v1.3.0
+[1.2.0]: https://github.com/soderlind/cache-tags-for-cloudflare/compare/v1.1.1...v1.2.0
 [1.1.1]: https://github.com/soderlind/cache-tags-for-cloudflare/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/soderlind/cache-tags-for-cloudflare/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/soderlind/cache-tags-for-cloudflare/releases/tag/v1.0.0
