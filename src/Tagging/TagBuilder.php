@@ -31,17 +31,16 @@ final class TagBuilder {
 	 * @return array<int, string>
 	 */
 	public function forPost( WP_Post $post ): array {
+		$site = $this->siteId();
+
 		$tags = [
 			'content',
-			'post-id-' . (string) $post->ID,
-			'post-type-' . $post->post_type,
+			'b' . $site,
+			'b' . $site . '-p' . (string) $post->ID,
+			'b' . $site . '-pt-' . $post->post_type,
 		];
 
-		if ( is_multisite() ) {
-			$tags[] = 'site-id-' . (string) get_current_blog_id();
-		}
-
-		foreach ( $this->taxonomyTags( $post ) as $tag ) {
+		foreach ( $this->taxonomyTags( $post, $site ) as $tag ) {
 			$tags[] = $tag;
 		}
 
@@ -49,13 +48,21 @@ final class TagBuilder {
 	}
 
 	/**
+	 * The site identifier used to scope tags: the blog ID on multisite, `1` otherwise.
+	 */
+	private function siteId(): string {
+		return is_multisite() ? (string) get_current_blog_id() : '1';
+	}
+
+	/**
 	 * Build `{taxonomy}-{slug}` tags for every public taxonomy the post belongs to.
 	 *
 	 * @param WP_Post $post Queried post.
+	 * @param string  $site Site identifier used to scope the tags.
 	 *
 	 * @return array<int, string>
 	 */
-	private function taxonomyTags( WP_Post $post ): array {
+	private function taxonomyTags( WP_Post $post, string $site ): array {
 		$tags       = [];
 		$taxonomies = get_object_taxonomies( $post->post_type, 'names' );
 
@@ -71,7 +78,7 @@ final class TagBuilder {
 			}
 
 			foreach ( $terms as $term ) {
-				$tags[] = $taxonomy . '-' . $term->slug;
+				$tags[] = 'b' . $site . '-' . $taxonomy . '-' . $term->slug;
 			}
 		}
 

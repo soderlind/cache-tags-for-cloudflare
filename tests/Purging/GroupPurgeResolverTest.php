@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Soderlind\CacheTagsForCloudflare\Tests\Purging;
 
+use Brain\Monkey\Functions;
 use Soderlind\CacheTagsForCloudflare\Purging\GroupPurgeResolver;
 use Soderlind\CacheTagsForCloudflare\Tests\TestCase;
 
@@ -18,11 +19,12 @@ final class GroupPurgeResolverTest extends TestCase {
 
 	protected function setUp(): void {
 		parent::setUp();
+		Functions\when( 'is_multisite' )->justReturn( false );
 		$this->resolver = new GroupPurgeResolver();
 	}
 
 	public function test_post_type(): void {
-		$this->assertSame( [ 'post-type-page' ], $this->resolver->forPostType( 'page' ) );
+		$this->assertSame( [ 'b1-pt-page' ], $this->resolver->forPostType( 'page' ) );
 	}
 
 	public function test_empty_post_type(): void {
@@ -31,7 +33,7 @@ final class GroupPurgeResolverTest extends TestCase {
 
 	public function test_taxonomy_terms(): void {
 		$this->assertSame(
-			[ 'category-news', 'category-sport' ],
+			[ 'b1-category-news', 'b1-category-sport' ],
 			$this->resolver->forTaxonomyTerms( 'category', [ 'news', ' sport ', '' ] )
 		);
 	}

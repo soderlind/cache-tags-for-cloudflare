@@ -27,7 +27,7 @@ final class GroupPurgeResolver {
 	public function forPostType( string $post_type ): array {
 		$post_type = trim( $post_type );
 
-		return '' === $post_type ? [] : [ 'post-type-' . $post_type ];
+		return '' === $post_type ? [] : [ 'b' . $this->siteId() . '-pt-' . $post_type ];
 	}
 
 	/**
@@ -44,17 +44,25 @@ final class GroupPurgeResolver {
 			return [];
 		}
 
+		$site = $this->siteId();
 		$tags = [];
 
 		foreach ( $slugs as $slug ) {
 			$slug = trim( (string) $slug );
 
 			if ( '' !== $slug ) {
-				$tags[] = $taxonomy . '-' . $slug;
+				$tags[] = 'b' . $site . '-' . $taxonomy . '-' . $slug;
 			}
 		}
 
 		return $tags;
+	}
+
+	/**
+	 * The site identifier used to scope tags: the blog ID on multisite, `1` otherwise.
+	 */
+	private function siteId(): string {
+		return is_multisite() ? (string) get_current_blog_id() : '1';
 	}
 
 	/**

@@ -28,12 +28,12 @@ final class TagBuilderTest extends TestCase {
 		$post = new WP_Post( [ 'ID' => 42, 'post_type' => 'post' ] );
 
 		$this->assertSame(
-			[ 'content', 'post-id-42', 'post-type-post', 'category-news', 'category-sport' ],
+			[ 'content', 'b1', 'b1-p42', 'b1-pt-post', 'b1-category-news', 'b1-category-sport' ],
 			( new TagBuilder() )->forPost( $post )
 		);
 	}
 
-	public function test_adds_site_id_on_multisite(): void {
+	public function test_uses_blog_id_on_multisite(): void {
 		Functions\when( 'is_multisite' )->justReturn( true );
 		Functions\when( 'get_current_blog_id' )->justReturn( 3 );
 		Functions\when( 'get_object_taxonomies' )->justReturn( [] );
@@ -41,7 +41,7 @@ final class TagBuilderTest extends TestCase {
 		$post = new WP_Post( [ 'ID' => 7, 'post_type' => 'page' ] );
 
 		$this->assertSame(
-			[ 'content', 'post-id-7', 'post-type-page', 'site-id-3' ],
+			[ 'content', 'b3', 'b3-p7', 'b3-pt-page' ],
 			( new TagBuilder() )->forPost( $post )
 		);
 	}
@@ -57,7 +57,7 @@ final class TagBuilderTest extends TestCase {
 		$post = new WP_Post( [ 'ID' => 1, 'post_type' => 'post' ] );
 
 		$this->assertSame(
-			[ 'content', 'post-id-1', 'post-type-post', 'category-news' ],
+			[ 'content', 'b1', 'b1-p1', 'b1-pt-post', 'b1-category-news' ],
 			( new TagBuilder() )->forPost( $post )
 		);
 	}

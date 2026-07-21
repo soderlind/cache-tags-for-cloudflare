@@ -37,7 +37,7 @@ final class Command {
 	 *
 	 * ## EXAMPLES
 	 *
-	 *     wp cache-tags purge --tags=post-id-42,category-news
+	 *     wp cache-tags purge --tags=b1-p42,b1-category-news
 	 *     wp cache-tags purge --all
 	 *
 	 * @param array<int, string>    $args       Positional arguments.
