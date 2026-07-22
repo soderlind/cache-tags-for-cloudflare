@@ -84,6 +84,49 @@ final class CloudflareClientTest extends TestCase {
 		$this->assertTrue( $this->client()->purge( [] )->success );
 	}
 
+	public function test_purge_urls_success(): void {
+		Functions\expect( 'wp_remote_post' )
+			->once()
+			->with(
+				\Mockery::type( 'string' ),
+				\Mockery::on(
+					static function ( array $args ): bool {
+						$body = json_decode( (string) $args['body'], true );
+
+						return isset( $body['files'] ) && [ 'https://example.com/a/' ] === $body['files'];
+					}
+				)
+			)
+			->andReturn( self::ok() );
+
+		$result = $this->client()->purgeUrls( [ 'https://example.com/a/' ] );
+
+		$this->assertTrue( $result->success );
+	}
+
+	public function test_purge_urls_splits_into_batches_of_thirty(): void {
+		Functions\expect( 'wp_remote_post' )->times( 3 )->andReturn( self::ok() );
+
+		$urls   = array_map( static fn ( int $i ): string => 'https://example.com/' . $i . '/', range( 1, 65 ) );
+		$result = $this->client()->purgeUrls( $urls );
+
+		$this->assertTrue( $result->success );
+	}
+
+	public function test_purge_urls_skips_api_when_not_configured(): void {
+		Functions\expect( 'wp_remote_post' )->never();
+
+		$result = $this->client( '', '' )->purgeUrls( [ 'https://example.com/a/' ] );
+
+		$this->assertFalse( $result->success );
+	}
+
+	public function test_purge_urls_noop_for_empty_list(): void {
+		Functions\expect( 'wp_remote_post' )->never();
+
+		$this->assertTrue( $this->client()->purgeUrls( [] )->success );
+	}
+
 	public function test_verify_success(): void {
 		Functions\expect( 'wp_remote_get' )->once()->andReturn( self::ok() );
 

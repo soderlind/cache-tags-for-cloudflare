@@ -37,11 +37,25 @@ final class PurgerTest extends TestCase {
 			 */
 			public array $received = [];
 
+			/**
+			 * @var array<int, string>
+			 */
+			public array $received_urls = [];
+
 			public bool $called = false;
+
+			public bool $urls_called = false;
 
 			public function purge( array $tags ): PurgeResult {
 				$this->called   = true;
 				$this->received = $tags;
+
+				return PurgeResult::success( 'ok' );
+			}
+
+			public function purgeUrls( array $urls ): PurgeResult {
+				$this->urls_called   = true;
+				$this->received_urls = $urls;
 
 				return PurgeResult::success( 'ok' );
 			}
@@ -91,5 +105,24 @@ final class PurgerTest extends TestCase {
 
 		$this->assertFalse( $result->success );
 		$this->assertFalse( $this->client->called );
+	}
+
+	public function test_purge_urls_normalizes_and_dedupes(): void {
+		Functions\when( 'esc_url_raw' )->returnArg( 1 );
+
+		$result = $this->purger->purgeUrls( ' https://example.com/a/ , https://example.com/b/ , https://example.com/a/ ' );
+
+		$this->assertTrue( $result->success );
+		$this->assertTrue( $this->client->urls_called );
+		$this->assertSame( [ 'https://example.com/a/', 'https://example.com/b/' ], $this->client->received_urls );
+	}
+
+	public function test_purge_urls_empty_does_not_call_client(): void {
+		Functions\when( 'esc_url_raw' )->returnArg( 1 );
+
+		$result = $this->purger->purgeUrls( '   ,  ' );
+
+		$this->assertFalse( $result->success );
+		$this->assertFalse( $this->client->urls_called );
 	}
 }

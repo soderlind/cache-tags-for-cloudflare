@@ -25,4 +25,14 @@ interface PurgeClient {
 	 * @param array<int, string> $tags Normalized tags to invalidate.
 	 */
 	public function purge( array $tags ): PurgeResult;
+
+	/**
+	 * Purge the given URLs (Cloudflare "purge by URL").
+	 *
+	 * Invalidates responses that carry no cache tag — e.g. a cached 404 at a URL
+	 * that has since become a real post or archive.
+	 *
+	 * @param array<int, string> $urls Absolute URLs to invalidate.
+	 */
+	public function purgeUrls( array $urls ): PurgeResult;
 }

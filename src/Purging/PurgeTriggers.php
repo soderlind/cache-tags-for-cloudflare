@@ -127,6 +127,29 @@ final class PurgeTriggers {
 		}
 
 		$this->collector->add( $this->filterTags( $tags, 'post', $post ) );
+
+		$this->purgePostUrl( $post );
+	}
+
+	/**
+	 * Queue the post's permalink for a purge-by-URL when it is published.
+	 *
+	 * Tag-based purging cannot invalidate a response cached before the content
+	 * existed — e.g. a cached 404 at a URL that has just become a real post.
+	 * Purging the permalink by URL closes that gap on publish.
+	 */
+	private function purgePostUrl( WP_Post $post ): void {
+		if ( 'publish' !== $post->post_status ) {
+			return;
+		}
+
+		$permalink = get_permalink( $post );
+
+		if ( ! is_string( $permalink ) || '' === $permalink ) {
+			return;
+		}
+
+		$this->collector->addUrls( [ $permalink ] );
 	}
 
 	/**

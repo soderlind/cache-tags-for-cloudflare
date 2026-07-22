@@ -53,6 +53,12 @@ final class Command {
 	 * [--tags=<tags>]
 	 * : Comma-separated list of already-formed tags to purge (e.g. `b1-t5,content`).
 	 *
+	 * [--urls=<urls>]
+	 * : Comma-separated list of absolute URLs to purge by URL (e.g. a cached 404 that
+	 * has since become a real page). URLs must match the cached request exactly
+	 * (scheme, host, trailing slash, query). Note: `--url` is reserved by WP-CLI for
+	 * multisite site selection, so this flag is `--urls`.
+	 *
 	 * ## EXAMPLES
 	 *
 	 *     wp cache-tags purge --all
@@ -60,6 +66,7 @@ final class Command {
 	 *     wp cache-tags purge --taxonomy=category --terms=news,sport
 	 *     wp cache-tags purge --post=124
 	 *     wp cache-tags purge --tags=b1-t5,content
+	 *     wp cache-tags purge --urls=https://example.com/hello-world/
 	 *
 	 * @param array<int, string>    $args       Positional arguments.
 	 * @param array<string, string> $assoc_args Associative arguments.
@@ -74,11 +81,12 @@ final class Command {
 				array_filter( array_map( 'trim', explode( ',', (string) ( $assoc_args['terms'] ?? '' ) ) ) )
 			),
 			! empty( $assoc_args['tags'] )    => $this->purger->purgeTags( (string) $assoc_args['tags'] ),
+			! empty( $assoc_args['urls'] )    => $this->purger->purgeUrls( (string) $assoc_args['urls'] ),
 			default                           => null,
 		};
 
 		if ( null === $result ) {
-			WP_CLI::error( 'Provide one of --all, --post-type, --taxonomy (with --terms), --post, or --tags.' );
+			WP_CLI::error( 'Provide one of --all, --post-type, --taxonomy (with --terms), --post, --tags, or --urls.' );
 		}
 
 		if ( $result->success ) {

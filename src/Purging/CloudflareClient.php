@@ -27,6 +27,11 @@ final class CloudflareClient implements PurgeClient {
 	 */
 	public const MAX_TAGS_PER_REQUEST = 30;
 
+	/**
+	 * Cloudflare's maximum number of URLs accepted per purge request (non-Enterprise).
+	 */
+	public const MAX_URLS_PER_REQUEST = 30;
+
 	public function __construct(
 		private readonly Credentials $credentials,
 		private readonly Logger $logger
@@ -50,7 +55,7 @@ final class CloudflareClient implements PurgeClient {
 		}
 
 		foreach ( array_chunk( $tags, self::MAX_TAGS_PER_REQUEST ) as $batch ) {
-			$result = $this->purgeBatch( $batch );
+			$result = $this->purgeBatch( [ 'tags' => array_values( $batch ) ] );
 
 			if ( ! $result->success ) {
 				return $result;
@@ -62,6 +67,39 @@ final class CloudflareClient implements PurgeClient {
 				/* translators: %d: number of purged cache tags. */
 				_n( 'Purged %d cache tag.', 'Purged %d cache tags.', count( $tags ), 'cache-tags-for-cloudflare' ),
 				count( $tags )
+			)
+		);
+	}
+
+	/**
+	 * Purge the given URLs, splitting into Cloudflare-sized batches.
+	 *
+	 * @param array<int, string> $urls Absolute URLs to invalidate.
+	 */
+	public function purgeUrls( array $urls ): PurgeResult {
+		$urls = array_values( array_unique( array_filter( $urls, static fn ( $url ): bool => '' !== $url ) ) );
+
+		if ( [] === $urls ) {
+			return PurgeResult::success();
+		}
+
+		if ( ! $this->credentials->isConfigured() ) {
+			return PurgeResult::failure( __( 'Cloudflare API token or zone ID is not configured.', 'cache-tags-for-cloudflare' ) );
+		}
+
+		foreach ( array_chunk( $urls, self::MAX_URLS_PER_REQUEST ) as $batch ) {
+			$result = $this->purgeBatch( [ 'files' => array_values( $batch ) ] );
+
+			if ( ! $result->success ) {
+				return $result;
+			}
+		}
+
+		return PurgeResult::success(
+			sprintf(
+				/* translators: %d: number of purged URLs. */
+				_n( 'Purged %d URL.', 'Purged %d URLs.', count( $urls ), 'cache-tags-for-cloudflare' ),
+				count( $urls )
 			)
 		);
 	}
@@ -89,11 +127,11 @@ final class CloudflareClient implements PurgeClient {
 	}
 
 	/**
-	 * Purge a single batch of tags.
+	 * Purge a single batch, given the Cloudflare request payload.
 	 *
-	 * @param array<int, string> $batch Tags (<= MAX_TAGS_PER_REQUEST).
+	 * @param array<string, array<int, string>> $payload Purge body, e.g. `[ 'tags' => [...] ]` or `[ 'files' => [...] ]`.
 	 */
-	private function purgeBatch( array $batch ): PurgeResult {
+	private function purgeBatch( array $payload ): PurgeResult {
 		$response = wp_remote_post(
 			self::API_BASE . '/zones/' . rawurlencode( $this->credentials->zoneId() ) . '/purge_cache',
 			[
@@ -102,11 +140,11 @@ final class CloudflareClient implements PurgeClient {
 					'Authorization' => 'Bearer ' . $this->credentials->apiToken(),
 					'Content-Type'  => 'application/json',
 				],
-				'body'    => (string) wp_json_encode( [ 'tags' => array_values( $batch ) ] ),
+				'body'    => (string) wp_json_encode( $payload ),
 			]
 		);
 
-		return $this->interpret( $response, __( 'Cache tags purged.', 'cache-tags-for-cloudflare' ) );
+		return $this->interpret( $response, __( 'Cache purged.', 'cache-tags-for-cloudflare' ) );
 	}
 
 	/**

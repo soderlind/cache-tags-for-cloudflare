@@ -164,5 +164,14 @@ final class Plugin {
 			10,
 			1
 		);
+
+		add_action(
+			'cache_tags_for_cloudflare/purge_urls',
+			static function ( $urls ) use ( $purger ): void {
+				$purger->purgeUrls( is_array( $urls ) ? $urls : (string) $urls );
+			},
+			10,
+			1
+		);
 	}
 }

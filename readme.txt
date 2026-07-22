@@ -4,7 +4,7 @@ Tags: cloudflare, cache, cache-tag, purge, cdn
 Requires at least: 6.8
 Tested up to: 7.0
 Requires PHP: 8.3
-Stable tag: 1.3.1
+Stable tag: 1.4.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -139,6 +139,12 @@ Yes. Every tag is scoped to the current blog (`b{blog_id}`), so purges on one su
 No. Requests to Cloudflare contain only your API token, Zone ID, and the list of cache tags to purge — never post content, personal data, or visitor information. See the **External services** section above for the exact endpoints.
 
 == Changelog ==
+
+= 1.4.0 =
+* Added: Purge by URL. When a post is published (including a draft or scheduled post going live), its permalink is now purged by URL alongside its cache tags. This invalidates responses that carry no cache tag — most importantly a cached `404` at a URL that has since become a real post — which tag-based purging alone cannot reach.
+* Added: `cache_tags_for_cloudflare/purge_urls` action hook to purge arbitrary URLs programmatically.
+* Added: `wp cache-tags purge --urls=<urls>` WP-CLI flag (comma-separated URLs).
+* Added: `cache_tags_for_cloudflare/purged_urls` and `cache_tags_for_cloudflare/purge_urls_failed` hooks fired after an automatic URL purge. URL purges are sent as a separate Cloudflare request from tag purges and must match the cached request exactly (scheme, host, trailing slash, query).
 
 = 1.3.1 =
 * Fixed: "Purge everything" (the Purge tab, `wp cache-tags purge --all`, and the `cache_tags_for_cloudflare/purge_all` hook) now purges the blog-scoped `b{id}` tag instead of the shared `content` tag. On multisite this keeps the purge scoped to the current subsite instead of clearing every site sharing the Cloudflare zone. To purge every site in the zone at once, purge the `content` tag directly (e.g. `wp cache-tags purge --tags=content`).

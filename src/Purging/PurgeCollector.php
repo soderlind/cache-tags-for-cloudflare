@@ -32,6 +32,13 @@ final class PurgeCollector {
 	 */
 	private array $pending = [];
 
+	/**
+	 * Pending URLs for this request, keyed by URL for O(1) dedupe.
+	 *
+	 * @var array<string, true>
+	 */
+	private array $pending_urls = [];
+
 	private bool $flush_registered = false;
 
 	public function __construct(
@@ -63,6 +70,27 @@ final class PurgeCollector {
 	}
 
 	/**
+	 * Queue URLs to be purged (by URL) when the request ends.
+	 *
+	 * @param array<int, string> $urls Absolute URLs to purge.
+	 */
+	public function addUrls( array $urls ): void {
+		if ( ! $this->options->boolean( 'purge_enabled' ) ) {
+			return;
+		}
+
+		foreach ( $urls as $url ) {
+			$url = trim( (string) $url );
+
+			if ( '' !== $url ) {
+				$this->pending_urls[ $url ] = true;
+			}
+		}
+
+		$this->registerFlush();
+	}
+
+	/**
 	 * Register the shutdown flush exactly once.
 	 */
 	private function registerFlush(): void {
@@ -75,9 +103,17 @@ final class PurgeCollector {
 	}
 
 	/**
-	 * Send the accumulated purge as a single batched request.
+	 * Send the accumulated purges as batched requests (tags, then URLs).
 	 */
 	public function flush(): void {
+		$this->flushTags();
+		$this->flushUrls();
+	}
+
+	/**
+	 * Flush the pending tag purge.
+	 */
+	private function flushTags(): void {
 		if ( [] === $this->pending ) {
 			return;
 		}
@@ -110,5 +146,41 @@ final class PurgeCollector {
 		 * @param string             $message Error message from Cloudflare.
 		 */
 		do_action( 'cache_tags_for_cloudflare/purge_failed', $tags, $result->message );
+	}
+
+	/**
+	 * Flush the pending URL purge.
+	 */
+	private function flushUrls(): void {
+		if ( [] === $this->pending_urls ) {
+			return;
+		}
+
+		$urls               = array_keys( $this->pending_urls );
+		$this->pending_urls = [];
+
+		$result = $this->client->purgeUrls( $urls );
+
+		if ( $result->success ) {
+			/**
+			 * Fires after URLs are successfully purged.
+			 *
+			 * @param array<int, string> $urls Purged URLs.
+			 */
+			do_action( 'cache_tags_for_cloudflare/purged_urls', $urls );
+
+			return;
+		}
+
+		$this->logger->log( 'URL purge failed: ' . $result->message );
+		set_transient( self::FAILURE_TRANSIENT, $result->message, DAY_IN_SECONDS );
+
+		/**
+		 * Fires when a URL purge fails.
+		 *
+		 * @param array<int, string> $urls    URLs that failed to purge.
+		 * @param string             $message Error message from Cloudflare.
+		 */
+		do_action( 'cache_tags_for_cloudflare/purge_urls_failed', $urls, $result->message );
 	}
 }
