@@ -4,7 +4,7 @@ Tags: cloudflare, cache, cache-tag, purge, cdn
 Requires at least: 6.8
 Tested up to: 7.0
 Requires PHP: 8.3
-Stable tag: 1.4.0
+Stable tag: 1.4.1
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -139,6 +139,11 @@ Yes. Every tag is scoped to the current blog (`b{blog_id}`), so purges on one su
 No. Requests to Cloudflare contain only your API token, Zone ID, and the list of cache tags to purge — never post content, personal data, or visitor information. See the **External services** section above for the exact endpoints.
 
 == Changelog ==
+
+= 1.4.1 =
+* Changed: The purge-failure admin notice now links to the Cache Tags settings page so credentials can be fixed in one click.
+* Changed: Added WordPress.org as the primary install option in the README.
+* Security: Bumped `fast-uri` to 3.1.4 to resolve a high-severity advisory (build-only dependency; nothing ships in the plugin).
 
 = 1.4.0 =
 * Added: Purge by URL. When a post is published (including a draft or scheduled post going live), its permalink is now purged by URL alongside its cache tags. This invalidates responses that carry no cache tag — most importantly a cached `404` at a URL that has since become a real post — which tag-based purging alone cannot reach.

@@ -42,9 +42,11 @@ final class Notices {
 		}
 
 		printf(
-			'<div class="notice notice-error is-dismissible"><p><strong>%1$s</strong> %2$s</p></div>',
+			'<div class="notice notice-error is-dismissible"><p><strong>%1$s</strong> %2$s <a href="%3$s">%4$s</a></p></div>',
 			esc_html__( 'Cache Tags for Cloudflare could not purge Cloudflare:', 'cache-tags-for-cloudflare' ),
-			esc_html( $message )
+			esc_html( $message ),
+			esc_url( admin_url( 'options-general.php?page=cache-tags-for-cloudflare' ) ),
+			esc_html__( 'Review settings', 'cache-tags-for-cloudflare' )
 		);
 	}
 }
