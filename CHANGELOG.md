@@ -5,6 +5,17 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.1] - 2026-07-22
+
+### Changed
+
+- The purge-failure admin notice now links to the Cache Tags settings page so credentials can be fixed in one click.
+- Added WordPress.org as the primary install option in the README.
+
+### Security
+
+- Bumped `fast-uri` to 3.1.4 to resolve a high-severity advisory (GHSA-v2hh-gcrm-f6hx). Build-only dependency; nothing ships in the plugin.
+
 ## [1.4.0] - 2026-07-22
 
 ### Added
@@ -77,10 +88,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Dismissible admin notice surfacing recurring purge failures.
 - WP-CLI commands: `wp cache-tags purge --tags=<tags>|--all` and `wp cache-tags verify`.
 
-[1.4.0]: https://github.com/soderlind/cache-tags-for-cloudflare/compare/v1.3.1...v1.4.0
-[1.3.1]: https://github.com/soderlind/cache-tags-for-cloudflare/compare/v1.3.0...v1.3.1
-[1.3.0]: https://github.com/soderlind/cache-tags-for-cloudflare/compare/v1.2.0...v1.3.0
-[1.2.0]: https://github.com/soderlind/cache-tags-for-cloudflare/compare/v1.1.1...v1.2.0
-[1.1.1]: https://github.com/soderlind/cache-tags-for-cloudflare/compare/v1.1.0...v1.1.1
-[1.1.0]: https://github.com/soderlind/cache-tags-for-cloudflare/compare/v1.0.0...v1.1.0
-[1.0.0]: https://github.com/soderlind/cache-tags-for-cloudflare/releases/tag/v1.0.0
+[1.4.1]: https://github.com/soderlind/cache-tags-for-cloudflare/compare/1.4.0...1.4.1
+[1.4.0]: https://github.com/soderlind/cache-tags-for-cloudflare/compare/1.3.1...1.4.0
+[1.3.1]: https://github.com/soderlind/cache-tags-for-cloudflare/compare/1.3.0...1.3.1
+[1.3.0]: https://github.com/soderlind/cache-tags-for-cloudflare/compare/1.2.0...1.3.0
+[1.2.0]: https://github.com/soderlind/cache-tags-for-cloudflare/compare/1.1.1...1.2.0
+[1.1.1]: https://github.com/soderlind/cache-tags-for-cloudflare/compare/1.1.0...1.1.1
+[1.1.0]: https://github.com/soderlind/cache-tags-for-cloudflare/compare/1.0.0...1.1.0
+[1.0.0]: https://github.com/soderlind/cache-tags-for-cloudflare/releases/tag/1.0.0
