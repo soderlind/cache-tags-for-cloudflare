@@ -85,6 +85,7 @@ When **Auto-purge on changes** is enabled (and valid credentials are set), the p
 | Event | Purges |
 | --- | --- |
 | Post published, updated, trashed, or untrashed (any transition **to or from** the published status) | `b{id}-p{ID}` + the post's `b{id}-t{term_id}` tags |
+| Post published (draft/scheduled going live, or any save while published) | the post's **permalink**, purged by URL |
 | Post permanently deleted | `b{id}-p{ID}` + its `b{id}-t{term_id}` tags |
 | Taxonomy term edited or deleted | `b{id}-t{term_id}` |
 
@@ -92,6 +93,7 @@ Details:
 
 - Only **public** post types and taxonomies are considered; **revisions and autosaves are ignored**.
 - Tags from all triggers in a request are **de-duplicated** and sent as a **single batched purge on `shutdown`** (split into Cloudflare's 30-tags-per-request batches), off the editor's critical path.
+- On publish, the permalink is also **purged by URL** in a separate request. This is the one case tag-based purging cannot cover: a response cached **before** the content existed (e.g. a cached `404` at a URL that later becomes a real post) carries no cache tag, so only a URL purge invalidates it. URL purges must match the cached request exactly — scheme, host, trailing slash, and query string all matter.
 - **Not** triggered by: draft-only edits, comments, menu/widget/theme changes, or plugin/core updates. Use the **Purge** tab, WP-CLI, or the `cache_tags_for_cloudflare/purge_tags` filter for those.
 - Static files (e.g. images under `wp-content/uploads/`) are served outside WordPress, so they are **not** tagged or purged by tag.
 
@@ -100,8 +102,8 @@ Details:
 The plugin exposes hooks for customizing tags and purging from your own code:
 
 - **Filters:** `cache_tags_for_cloudflare/tags`, `cache_tags_for_cloudflare/purge_tags`
-- **Result actions:** `cache_tags_for_cloudflare/purged`, `cache_tags_for_cloudflare/purge_failed`
-- **Programmatic purging:** `cache_tags_for_cloudflare/purge_post`, `.../purge_terms`, `.../purge_post_type`, `.../purge_all`, `.../purge`
+- **Result actions:** `cache_tags_for_cloudflare/purged`, `cache_tags_for_cloudflare/purge_failed`, `cache_tags_for_cloudflare/purged_urls`, `cache_tags_for_cloudflare/purge_urls_failed`
+- **Programmatic purging:** `cache_tags_for_cloudflare/purge_post`, `.../purge_terms`, `.../purge_post_type`, `.../purge_all`, `.../purge`, `.../purge_urls`
 
 See the [Developer guide](docs/DEVELOPER.md) for full documentation and examples.
 
@@ -112,6 +114,7 @@ wp cache-tags purge --post-type=page
 wp cache-tags purge --taxonomy=category --terms=news,sport
 wp cache-tags purge --post=42
 wp cache-tags purge --tags=b1-t5,content
+wp cache-tags purge --urls=https://example.com/hello-world/
 wp cache-tags purge --all
 wp cache-tags verify
 ```
@@ -125,7 +128,7 @@ This plugin connects to the **Cloudflare API** (`https://api.cloudflare.com`) to
 Requests are made only after you provide a Cloudflare API token and Zone ID:
 
 - **Verifying credentials** — saving credentials or running `wp cache-tags verify` calls `GET https://api.cloudflare.com/client/v4/user/tokens/verify`, sending your API token (in the `Authorization` header) so Cloudflare can confirm it is valid.
-- **Purging cache** — auto-purge on content changes, manual purges, and `wp cache-tags purge` call `POST https://api.cloudflare.com/client/v4/zones/{zone-id}/purge_cache`, sending your API token (in the `Authorization` header), your Zone ID (in the URL), and the list of cache tags to purge (in the body). No post content, personal data, or visitor information is sent.
+- **Purging cache** — auto-purge on content changes, manual purges, and `wp cache-tags purge` call `POST https://api.cloudflare.com/client/v4/zones/{zone-id}/purge_cache`, sending your API token (in the `Authorization` header), your Zone ID (in the URL), and either the list of cache tags or the list of URLs to purge (in the body). No post content, personal data, or visitor information is sent.
 
 Cloudflare is a third-party service provided by Cloudflare, Inc. By using the purging feature you agree to Cloudflare's [Terms of Service](https://www.cloudflare.com/website-terms/) and [Privacy Policy](https://www.cloudflare.com/privacypolicy/).
 

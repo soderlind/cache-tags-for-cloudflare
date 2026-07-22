@@ -74,6 +74,36 @@ final class Purger {
 	}
 
 	/**
+	 * Purge one or more URLs (Cloudflare "purge by URL").
+	 *
+	 * Useful for responses that carry no cache tag, such as a cached 404 at a URL
+	 * that has since become a real post or archive page.
+	 *
+	 * @param array<int, string>|string $urls URL list, or a comma-separated string.
+	 */
+	public function purgeUrls( array|string $urls ): PurgeResult {
+		$list = is_array( $urls ) ? $urls : explode( ',', $urls );
+
+		$list = array_values(
+			array_unique(
+				array_filter(
+					array_map(
+						static fn ( $url ): string => esc_url_raw( trim( (string) $url ) ),
+						$list
+					),
+					static fn ( string $url ): bool => '' !== $url
+				)
+			)
+		);
+
+		if ( [] === $list ) {
+			return PurgeResult::failure( 'No valid URLs to purge.' );
+		}
+
+		return $this->client->purgeUrls( $list );
+	}
+
+	/**
 	 * Normalize and purge the given tags.
 	 *
 	 * @param array<int, string> $tags Raw tags to purge.

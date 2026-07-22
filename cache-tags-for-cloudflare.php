@@ -3,7 +3,7 @@
  * Plugin Name:       Cache Tags for Cloudflare
  * Plugin URI:        https://github.com/soderlind/cache-tags-for-cloudflare
  * Description:       Adds Cache-Tag HTTP response headers for singular WordPress content and purges Cloudflare by tag when content changes.
- * Version:           1.3.1
+ * Version:           1.4.0
  * Requires at least: 6.8
  * Tested up to:      7.0
  * Requires PHP:      8.3
@@ -25,7 +25,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-const VERSION = '1.3.1';
+const VERSION = '1.4.0';
 
 define( 'CACHE_TAGS_FOR_CLOUDFLARE_FILE', __FILE__ );
 define( 'CACHE_TAGS_FOR_CLOUDFLARE_DIR', plugin_dir_path( __FILE__ ) );

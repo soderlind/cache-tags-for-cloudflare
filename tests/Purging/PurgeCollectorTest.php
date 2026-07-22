@@ -37,10 +37,18 @@ final class PurgeCollectorTest extends TestCase {
 		return new class() implements PurgeClient {
 			/** @var array<int, string> */
 			public array $received = [];
+			/** @var array<int, string> */
+			public array $received_urls = [];
 			public bool $shouldSucceed = true;
 
 			public function purge( array $tags ): PurgeResult {
 				$this->received = $tags;
+
+				return $this->shouldSucceed ? PurgeResult::success() : PurgeResult::failure( 'boom' );
+			}
+
+			public function purgeUrls( array $urls ): PurgeResult {
+				$this->received_urls = $urls;
 
 				return $this->shouldSucceed ? PurgeResult::success() : PurgeResult::failure( 'boom' );
 			}
@@ -76,6 +84,30 @@ final class PurgeCollectorTest extends TestCase {
 		$collector->flush();
 
 		$this->assertSame( [], $client->received );
+	}
+
+	public function test_urls_are_deduped_and_flushed_separately(): void {
+		$client    = $this->recordingClient();
+		$collector = $this->collector( $client );
+
+		$collector->addUrls( [ 'https://example.com/a/', 'https://example.com/a/' ] );
+		$collector->addUrls( [ 'https://example.com/b/' ] );
+		$collector->add( [ 'post-id-1' ] );
+		$collector->flush();
+
+		$this->assertSame( [ 'post-id-1' ], $client->received );
+		sort( $client->received_urls );
+		$this->assertSame( [ 'https://example.com/a/', 'https://example.com/b/' ], $client->received_urls );
+	}
+
+	public function test_urls_not_collected_when_purge_disabled(): void {
+		$client    = $this->recordingClient();
+		$collector = $this->collector( $client, [ 'purge_enabled' => false ] );
+
+		$collector->addUrls( [ 'https://example.com/a/' ] );
+		$collector->flush();
+
+		$this->assertSame( [], $client->received_urls );
 	}
 
 	public function test_records_failure_transient_on_error(): void {

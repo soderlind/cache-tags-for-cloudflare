@@ -63,6 +63,20 @@ add_action( 'cache_tags_for_cloudflare/purge_failed', function ( array $tags, st
 }, 10, 2 );
 ```
 
+### `cache_tags_for_cloudflare/purged_urls` and `.../purge_urls_failed` (actions)
+
+React to the result of an automatic **purge by URL** (fired when a published post's permalink is purged). Symmetric to the tag actions above.
+
+```php
+add_action( 'cache_tags_for_cloudflare/purged_urls', function ( array $urls ) {
+	error_log( 'Cloudflare purged URLs: ' . implode( ',', $urls ) );
+} );
+
+add_action( 'cache_tags_for_cloudflare/purge_urls_failed', function ( array $urls, string $message ) {
+	error_log( "Cloudflare URL purge failed ({$message}): " . implode( ',', $urls ) );
+}, 10, 2 );
+```
+
 ## Programmatic purging
 
 Trigger an immediate purge from your own code with these action hooks (each maps to the shared purge façade):
@@ -83,6 +97,12 @@ do_action( 'cache_tags_for_cloudflare/purge_all' );
 // Purge raw cache tags (array or comma-separated string).
 do_action( 'cache_tags_for_cloudflare/purge', [ 'b1-t5', 'content' ] );
 do_action( 'cache_tags_for_cloudflare/purge', 'b1-t5,content' );
+
+// Purge one or more URLs (array or comma-separated string).
+// Useful for a response cached before its content existed — e.g. a cached 404
+// at a URL that has since become a real post. Tag-based purging cannot reach it.
+do_action( 'cache_tags_for_cloudflare/purge_urls', [ 'https://example.com/hello-world/' ] );
+do_action( 'cache_tags_for_cloudflare/purge_urls', 'https://example.com/a/,https://example.com/b/' );
 ```
 
 Example — purge a product's page and category after a WooCommerce stock change:
@@ -95,6 +115,8 @@ add_action( 'woocommerce_product_set_stock', function ( $product ) {
 ```
 
 These hooks purge **immediately** (they are not batched on `shutdown` like auto-purge), so each call results in a Cloudflare API request. Term slugs passed to `.../purge_terms` are resolved to their numeric term IDs automatically.
+
+URLs passed to `.../purge_urls` are sent as a **separate** Cloudflare request from tag purges (the API does not allow mixing `files` and `tags`) and must match the cached request exactly — scheme, host, trailing slash, and query string all matter.
 
 On **multisite**, `.../purge_all` purges only the current subsite via its `b{id}` tag. To purge every site sharing the Cloudflare zone at once, purge the global `content` tag directly with `do_action( 'cache_tags_for_cloudflare/purge', 'content' )`.
 

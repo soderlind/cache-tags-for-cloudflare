@@ -5,6 +5,19 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] - 2026-07-21
+
+### Added
+
+- Purge by URL. When a post is published (including a draft or scheduled post going live), its permalink is now purged by URL in addition to its cache tags. This invalidates responses that carry no cache tag — most importantly a cached `404` at a URL that has since become a real post — which tag-based purging alone cannot reach.
+- New `cache_tags_for_cloudflare/purge_urls` action hook for purging arbitrary URLs programmatically, e.g. `do_action( 'cache_tags_for_cloudflare/purge_urls', [ 'https://example.com/hello-world/' ] )`.
+- New WP-CLI flag `wp cache-tags purge --urls=<urls>` (comma-separated) to purge one or more URLs. (`--url` is reserved by WP-CLI for multisite site selection, so the flag is `--urls`.)
+- New `cache_tags_for_cloudflare/purged_urls` and `cache_tags_for_cloudflare/purge_urls_failed` action hooks fired after an automatic URL purge succeeds or fails.
+
+### Note
+
+- URL purges are sent as a separate Cloudflare request from tag purges (the API does not allow mixing `files` and `tags`). URLs must match the cached request exactly — scheme, host, trailing slash, and query string all matter.
+
 ## [1.3.1] - 2026-07-21
 
 ### Fixed
@@ -64,6 +77,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Dismissible admin notice surfacing recurring purge failures.
 - WP-CLI commands: `wp cache-tags purge --tags=<tags>|--all` and `wp cache-tags verify`.
 
+[1.4.0]: https://github.com/soderlind/cache-tags-for-cloudflare/compare/v1.3.1...v1.4.0
 [1.3.1]: https://github.com/soderlind/cache-tags-for-cloudflare/compare/v1.3.0...v1.3.1
 [1.3.0]: https://github.com/soderlind/cache-tags-for-cloudflare/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/soderlind/cache-tags-for-cloudflare/compare/v1.1.1...v1.2.0
