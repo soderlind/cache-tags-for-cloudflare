@@ -37,6 +37,7 @@ Term tags use the numeric term ID (`b1-t5`), so they stay stable when a term is 
 ## Installation
 
 1. Install the plugin using one of:
+   - **WordPress.org** — install directly from the [plugin directory](https://wordpress.org/plugins/cache-tags-for-cloudflare/) via **Plugins → Add New** and search for "Cache Tags for Cloudflare".
    - **Release zip** — download the latest `cache-tags-for-cloudflare.zip` from the [Releases](https://github.com/soderlind/cache-tags-for-cloudflare/releases) page and upload it via **Plugins → Add New → Upload Plugin**.
    - **Composer** — for Composer-managed WordPress sites (Bedrock, etc.). The `wordpress-plugin` type installs it into your plugins directory automatically (via `composer/installers`):
 
