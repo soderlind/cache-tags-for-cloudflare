@@ -1,5 +1,1 @@
 blank_issues_enabled: false
-contact_links:
-  - name: Question or support
-    url: https://github.com/soderlind/cache-tags-for-cloudflare/discussions
-    about: Ask questions and get help in Discussions.
