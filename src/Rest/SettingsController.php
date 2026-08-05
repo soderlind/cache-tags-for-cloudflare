@@ -135,6 +135,7 @@ final class SettingsController {
 				? (string) $current['zone_id']
 				: (string) $request->get_param( 'zone_id' ),
 			'api_token'      => (string) $current['api_token'],
+			'verified_at'    => (int) $current['verified_at'],
 		];
 
 		// Only overwrite the token when a new, non-empty value is supplied and it
@@ -143,6 +144,11 @@ final class SettingsController {
 
 		if ( ! $this->credentials->isTokenFromConstant() && '' !== $token ) {
 			$new['api_token'] = $token;
+		}
+
+		// Changed credentials invalidate the stored verification result.
+		if ( $new['api_token'] !== (string) $current['api_token'] || $new['zone_id'] !== (string) $current['zone_id'] ) {
+			$new['verified_at'] = 0;
 		}
 
 		$this->options->save( $new );
@@ -183,6 +189,7 @@ final class SettingsController {
 			[
 				'post_types' => $post_types,
 				'taxonomies' => $taxonomies,
+				'site_id'    => $this->resolver->siteId(),
 			],
 			200
 		);
@@ -192,7 +199,13 @@ final class SettingsController {
 	 * POST /verify
 	 */
 	public function verify(): WP_REST_Response {
-		return $this->resultResponse( $this->client->verify() );
+		$result = $this->client->verify();
+
+		$settings                = $this->options->all();
+		$settings['verified_at'] = $result->success ? time() : 0;
+		$this->options->save( $settings );
+
+		return $this->resultResponse( $result );
 	}
 
 	/**
@@ -228,7 +241,8 @@ final class SettingsController {
 	 * @return array<string, mixed>
 	 */
 	private function settingsPayload(): array {
-		$settings = $this->options->all();
+		$settings    = $this->options->all();
+		$verified_at = (int) $settings['verified_at'];
 
 		return [
 			'header_enabled'      => (bool) $settings['header_enabled'],
@@ -238,7 +252,20 @@ final class SettingsController {
 			'has_token'           => '' !== $this->credentials->apiToken(),
 			'token_from_constant' => $this->credentials->isTokenFromConstant(),
 			'zone_from_constant'  => $this->credentials->isZoneFromConstant(),
+			'is_configured'       => '' !== $this->credentials->apiToken() && '' !== $this->credentials->zoneId(),
+			'verified'            => $verified_at > 0,
+			'verified_at'         => $verified_at > 0 ? $this->formatTimestamp( $verified_at ) : '',
 		];
+	}
+
+	/**
+	 * Format a UNIX timestamp using the site's date and time formats.
+	 */
+	private function formatTimestamp( int $timestamp ): string {
+		return (string) wp_date(
+			get_option( 'date_format' ) . ' ' . get_option( 'time_format' ),
+			$timestamp
+		);
 	}
 
 	/**

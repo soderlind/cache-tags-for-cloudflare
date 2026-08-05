@@ -9,12 +9,23 @@
 		margin-bottom: 16px;
 	}
 
+	.ctcf-group {
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+		margin: 16px 0 24px;
+	}
+
+	.ctcf-field {
+		max-width: 32em;
+	}
+
 	.ctcf-row {
 		display: flex;
 		flex-wrap: wrap;
 		align-items: flex-end;
 		gap: 12px;
-		margin-bottom: 16px;
+		margin-bottom: 8px;
 
 		.components-base-control {
 			flex: 1 1 220px;
@@ -23,14 +34,48 @@
 	}
 
 	.ctcf-help {
-		margin: -8px 0 16px;
+		margin: 4px 0 16px;
 		color: #757575;
 		font-size: 12px;
+	}
+
+	.ctcf-preview {
+		margin: 4px 0 16px;
+		color: #757575;
+		font-size: 12px;
+		font-family: Menlo, Consolas, monaco, monospace;
+	}
+
+	.ctcf-group .ctcf-preview {
+		margin-bottom: 0;
 	}
 
 	.ctcf-actions {
 		display: flex;
 		gap: 8px;
 		flex-wrap: wrap;
+	}
+
+	.components-panel__body {
+		border-top: 1px solid #e0e0e0;
+		margin-top: 8px;
+	}
+}
+
+// Keep feedback visible regardless of scroll position: the purge actions sit
+// far below the fold, so top-of-page notices went unnoticed.
+.ctcf-notices {
+	position: fixed;
+	right: 24px;
+	bottom: 24px;
+	z-index: 100000;
+	display: flex;
+	flex-direction: column-reverse;
+	gap: 8px;
+	width: min(380px, calc(100vw - 48px));
+
+	.components-notice {
+		margin: 0;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 	}
 }

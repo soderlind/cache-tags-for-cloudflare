@@ -34,6 +34,7 @@ final class Options {
 		'api_token'      => '',
 		'zone_id'        => '',
 		'debug'          => false,
+		'verified_at'    => 0,
 	];
 
 	/**
@@ -93,6 +94,7 @@ final class Options {
 			'api_token'      => isset( $input['api_token'] ) ? sanitize_text_field( (string) $input['api_token'] ) : '',
 			'zone_id'        => isset( $input['zone_id'] ) ? sanitize_text_field( (string) $input['zone_id'] ) : '',
 			'debug'          => ! empty( $input['debug'] ),
+			'verified_at'    => isset( $input['verified_at'] ) ? absint( $input['verified_at'] ) : 0,
 		];
 	}
 }
