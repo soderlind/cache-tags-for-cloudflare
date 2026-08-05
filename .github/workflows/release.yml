@@ -1,11 +1,11 @@
 name: Release
 
+# Triggered only by a published GitHub release. `create-release.yml` publishes
+# the release (which also creates the tag); listening to the tag push as well
+# would run this job twice and race the WordPress.org SVN tag commit.
 on:
   release:
     types: [published]
-  push:
-    tags:
-      - '*'
 
 permissions:
   contents: write

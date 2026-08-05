@@ -5,6 +5,13 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.1] - 2026-08-05
+
+### Fixed
+
+- Release workflow no longer runs twice per release. It now triggers only on a published GitHub release, so the duplicate tag-push run can't race and fail the WordPress.org SVN tag commit.
+- Build artifacts (the `dist/` staging copy and the generated `.zip`) are now excluded from the distributed plugin, so the WordPress.org package no longer contains a nested duplicate of itself.
+
 ## [1.5.0] - 2026-08-05
 
 ### Fixed
@@ -108,6 +115,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Dismissible admin notice surfacing recurring purge failures.
 - WP-CLI commands: `wp cache-tags purge --tags=<tags>|--all` and `wp cache-tags verify`.
 
+[1.5.1]: https://github.com/soderlind/cache-tags-for-cloudflare/compare/1.5.0...1.5.1
 [1.5.0]: https://github.com/soderlind/cache-tags-for-cloudflare/compare/1.4.1...1.5.0
 [1.4.1]: https://github.com/soderlind/cache-tags-for-cloudflare/compare/1.4.0...1.4.1
 [1.4.0]: https://github.com/soderlind/cache-tags-for-cloudflare/compare/1.3.1...1.4.0
