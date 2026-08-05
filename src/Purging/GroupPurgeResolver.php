@@ -79,7 +79,7 @@ final class GroupPurgeResolver {
 	/**
 	 * The site identifier used to scope tags: the blog ID on multisite, `1` otherwise.
 	 */
-	private function siteId(): string {
+	public function siteId(): string {
 		return is_multisite() ? (string) get_current_blog_id() : '1';
 	}
 

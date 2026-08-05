@@ -5,6 +5,26 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0] - 2026-08-05
+
+### Fixed
+
+- The **Purge** tab no longer locks itself on every page load. Verification state is stored server-side, so a site with saved credentials opens with the purge tools ready instead of requiring a trip to **Settings → Test connection** first.
+
+### Added
+
+- Persistent connection status on the **Settings** tab: not configured, saved-but-untested, connected with the time of the last successful test, or the error Cloudflare returned.
+- Tag previews under each purge tool showing the exact cache tag that will be sent (e.g. `b1-pt-post`).
+- Help text and a link to Cloudflare's token screen for the **API token** and **Zone ID** fields.
+
+### Changed
+
+- "Purge everything" now confirms in a WordPress modal that states exactly what gets purged, replacing the browser's native confirm dialog.
+- Result notices moved to a fixed corner stack so feedback is visible from the purge buttons; successes auto-dismiss, errors stay.
+- The settings screen opens on **Settings** when no credentials are stored, and on **Purge** otherwise.
+- Debug logging and raw-tag purging moved into collapsed "Advanced" sections; credential fields no longer stretch the full window width.
+- The three "Purge" buttons now have distinct accessible labels.
+
 ## [1.4.1] - 2026-07-22
 
 ### Changed
@@ -88,6 +108,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Dismissible admin notice surfacing recurring purge failures.
 - WP-CLI commands: `wp cache-tags purge --tags=<tags>|--all` and `wp cache-tags verify`.
 
+[1.5.0]: https://github.com/soderlind/cache-tags-for-cloudflare/compare/1.4.1...1.5.0
 [1.4.1]: https://github.com/soderlind/cache-tags-for-cloudflare/compare/1.4.0...1.4.1
 [1.4.0]: https://github.com/soderlind/cache-tags-for-cloudflare/compare/1.3.1...1.4.0
 [1.3.1]: https://github.com/soderlind/cache-tags-for-cloudflare/compare/1.3.0...1.3.1

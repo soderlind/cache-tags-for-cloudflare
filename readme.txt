@@ -4,7 +4,7 @@ Tags: cloudflare, cache, cache-tag, purge, cdn
 Requires at least: 6.8
 Tested up to: 7.0
 Requires PHP: 8.3
-Stable tag: 1.4.1
+Stable tag: 1.5.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -139,6 +139,17 @@ Yes. Every tag is scoped to the current blog (`b{blog_id}`), so purges on one su
 No. Requests to Cloudflare contain only your API token, Zone ID, and the list of cache tags to purge — never post content, personal data, or visitor information. See the **External services** section above for the exact endpoints.
 
 == Changelog ==
+
+= 1.5.0 =
+* Fixed: The Purge tab no longer locks itself on every page load. Verification state is stored server-side, so a site with saved credentials opens with the purge tools ready instead of requiring a trip to Settings → Test connection first.
+* Added: Persistent connection status on the Settings tab: not configured, saved-but-untested, connected with the time of the last successful test, or the error Cloudflare returned.
+* Added: Tag previews under each purge tool showing the exact cache tag that will be sent (e.g. `b1-pt-post`).
+* Added: Help text and a link to Cloudflare's token screen for the API token and Zone ID fields.
+* Changed: "Purge everything" now confirms in a WordPress modal that states exactly what gets purged, replacing the browser's native confirm dialog.
+* Changed: Result notices moved to a fixed corner stack so feedback is visible from the purge buttons; successes auto-dismiss, errors stay.
+* Changed: The settings screen opens on Settings when no credentials are stored, and on Purge otherwise.
+* Changed: Debug logging and raw-tag purging moved into collapsed "Advanced" sections; credential fields no longer stretch the full window width.
+* Changed: The three "Purge" buttons now have distinct accessible labels.
 
 = 1.4.1 =
 * Changed: The purge-failure admin notice now links to the Cache Tags settings page so credentials can be fixed in one click.
