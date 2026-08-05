@@ -4,7 +4,7 @@ Tags: cloudflare, cache, cache-tag, purge, cdn
 Requires at least: 6.8
 Tested up to: 7.1
 Requires PHP: 8.3
-Stable tag: 1.5.1
+Stable tag: 1.5.2
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -139,6 +139,11 @@ Yes. Every tag is scoped to the current blog (`b{blog_id}`), so purges on one su
 No. Requests to Cloudflare contain only your API token, Zone ID, and the list of cache tags to purge — never post content, personal data, or visitor information. See the **External services** section above for the exact endpoints.
 
 == Changelog ==
+
+= 1.5.2 =
+* Changed: Tested up to WordPress 7.1.
+* Changed: Plugin URI now points to the WordPress.org listing.
+* Changed: Updated dev/build dependencies to clear security advisories (no change to the shipped plugin).
 
 = 1.5.1 =
 * Fixed: Release workflow no longer runs twice per release, so the WordPress.org deployment no longer reports a spurious failure.

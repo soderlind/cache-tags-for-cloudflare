@@ -5,6 +5,14 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.2] - 2026-08-05
+
+### Changed
+
+- Tested up to WordPress 7.1.
+- Plugin URI now points to the WordPress.org listing.
+- Updated dev/build dependencies to clear security advisories (no change to the shipped plugin).
+
 ## [1.5.1] - 2026-08-05
 
 ### Fixed
@@ -115,6 +123,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Dismissible admin notice surfacing recurring purge failures.
 - WP-CLI commands: `wp cache-tags purge --tags=<tags>|--all` and `wp cache-tags verify`.
 
+[1.5.2]: https://github.com/soderlind/cache-tags-for-cloudflare/compare/1.5.1...1.5.2
 [1.5.1]: https://github.com/soderlind/cache-tags-for-cloudflare/compare/1.5.0...1.5.1
 [1.5.0]: https://github.com/soderlind/cache-tags-for-cloudflare/compare/1.4.1...1.5.0
 [1.4.1]: https://github.com/soderlind/cache-tags-for-cloudflare/compare/1.4.0...1.4.1
