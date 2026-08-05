@@ -1,5 +1,7 @@
 # Files and folders excluded from the distributed plugin zip / wp.org SVN.
 .DS_Store
+/dist
+/cache-tags-for-cloudflare.zip
 /.git
 /.wordpress-org
 /.gitattributes
